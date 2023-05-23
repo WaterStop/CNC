@@ -1,0 +1,826 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget</class>
+ <widget class="QWidget" name="Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1024</width>
+    <height>768</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Widget</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>768</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Plain</enum>
+   </property>
+   <property name="lineWidth">
+    <number>0</number>
+   </property>
+   <widget class="widget5_2" name="widget_9" native="true">
+    <property name="geometry">
+     <rect>
+      <x>667</x>
+      <y>501</y>
+      <width>296</width>
+      <height>205</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+   <widget class="widget2" name="widget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>196</x>
+      <y>67</y>
+      <width>476</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+   <widget class="PopupWin1" name="wg_popwin" native="true">
+    <property name="geometry">
+     <rect>
+      <x>775</x>
+      <y>107</y>
+      <width>220</width>
+      <height>470</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+   <widget class="widget3_4" name="widget_11" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="wedget1" name="widget_1" native="true">
+    <property name="geometry">
+     <rect>
+      <x>17</x>
+      <y>67</y>
+      <width>177</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+   </widget>
+   <widget class="widget3" name="widget_3" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_popwin">
+    <property name="geometry">
+     <rect>
+      <x>970</x>
+      <y>300</y>
+      <width>27</width>
+      <height>76</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="widget4" name="widget_4" native="true">
+    <property name="geometry">
+     <rect>
+      <x>17</x>
+      <y>501</y>
+      <width>654</width>
+      <height>205</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="widget5" name="widget_5" native="true">
+    <property name="geometry">
+     <rect>
+      <x>667</x>
+      <y>501</y>
+      <width>296</width>
+      <height>205</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+   <widget class="widget3_3" name="widget_10" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="key_board" name="widget_8" native="true">
+    <property name="geometry">
+     <rect>
+      <x>667</x>
+      <y>501</y>
+      <width>296</width>
+      <height>205</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+   <widget class="widget3_2" name="widget_6" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="Offset_knife" name="widget_7" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_5" name="widget_12" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_6" name="widget_13" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_7" name="widget_14" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_8" name="widget_15" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_9" name="widget_16" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_10" name="widget_17" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_11" name="widget_18" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_12" name="widget_19" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_13" name="widget_20" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_14" name="widget_21" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="widget3_15" name="widget_22" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>67</y>
+      <width>301</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="FixedVal_widget" name="widget_23" native="true">
+    <property name="geometry">
+     <rect>
+      <x>666</x>
+      <y>430</y>
+      <width>301</width>
+      <height>70</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+   <widget class="Process_modify" name="pro_modi" native="true">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>70</y>
+      <width>143</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_set">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>10</y>
+      <width>24</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="set_widget" name="widget_set" native="true">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>75</y>
+      <width>899</width>
+      <height>643</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+   </widget>
+   <widget class="TextTicker" name="label_warn">
+    <property name="geometry">
+     <rect>
+      <x>333</x>
+      <y>10</y>
+      <width>301</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <zorder>widget_9</zorder>
+   <zorder>widget_2</zorder>
+   <zorder>widget_11</zorder>
+   <zorder>widget_1</zorder>
+   <zorder>widget_3</zorder>
+   <zorder>widget_4</zorder>
+   <zorder>widget_5</zorder>
+   <zorder>widget_10</zorder>
+   <zorder>widget_8</zorder>
+   <zorder>widget_6</zorder>
+   <zorder>widget_7</zorder>
+   <zorder>widget_12</zorder>
+   <zorder>widget_13</zorder>
+   <zorder>widget_14</zorder>
+   <zorder>widget_15</zorder>
+   <zorder>widget_16</zorder>
+   <zorder>widget_17</zorder>
+   <zorder>bt_popwin</zorder>
+   <zorder>widget_18</zorder>
+   <zorder>widget_19</zorder>
+   <zorder>widget_20</zorder>
+   <zorder>widget_21</zorder>
+   <zorder>widget_22</zorder>
+   <zorder>widget_23</zorder>
+   <zorder>pro_modi</zorder>
+   <zorder>bt_set</zorder>
+   <zorder>widget_set</zorder>
+   <zorder>wg_popwin</zorder>
+   <zorder>label_warn</zorder>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>wedget1</class>
+   <extends>QWidget</extends>
+   <header location="global">wedget1.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget2</class>
+   <extends>QWidget</extends>
+   <header location="global">widget2.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget4</class>
+   <extends>QWidget</extends>
+   <header location="global">widget4.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget5</class>
+   <extends>QWidget</extends>
+   <header location="global">widget5.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PopupWin1</class>
+   <extends>QWidget</extends>
+   <header location="global">popupwin1.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_2</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3_2.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Offset_knife</class>
+   <extends>QWidget</extends>
+   <header location="global">offset_knife.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>key_board</class>
+   <extends>QWidget</extends>
+   <header location="global">key_board.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget5_2</class>
+   <extends>QWidget</extends>
+   <header location="global">widget5_2.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_3</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3_3.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_4</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3_4.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_5</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3_5.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_6</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3_6.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_7</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3_7.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_8</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3_8.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_9</class>
+   <extends>QWidget</extends>
+   <header location="global">widget3_9.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_10</class>
+   <extends>QWidget</extends>
+   <header>widget3_10.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_11</class>
+   <extends>QWidget</extends>
+   <header>widget3_11.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_12</class>
+   <extends>QWidget</extends>
+   <header>widget3_12.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_13</class>
+   <extends>QWidget</extends>
+   <header>widget3_13.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_14</class>
+   <extends>QWidget</extends>
+   <header>widget3_14.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widget3_15</class>
+   <extends>QWidget</extends>
+   <header>widget3_15.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FixedVal_widget</class>
+   <extends>QWidget</extends>
+   <header>fixedval_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Process_modify</class>
+   <extends>QWidget</extends>
+   <header location="global">process_modify.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>set_widget</class>
+   <extends>QWidget</extends>
+   <header location="global">set_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TextTicker</class>
+   <extends>QLabel</extends>
+   <header>textticker.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
