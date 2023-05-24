@@ -14,17 +14,18 @@ using namespace std;
 
 
 */
-// 裁剪多边形和实体多边形的节点
-typedef struct LinkNode{
+// 数据结构
+typedef struct LinkList{
     coordinate pos;// 坐标
     int lineAttribute;// 表示该点开始到下一点的线段的属性，如直线、圆弧、螺纹
-    int intersection;// 标识本节点的属性；0为实体多边形节点；1为裁剪多边形节点；2为交点
     bool used;// 用于多个输出多边形的情况（所有交点的used初值为0，当一个交点被输出时，其used域置为1）
-}linkNode;
-typedef struct LinkList{
-    linkNode data;
-    struct LinkList *next;// 链表指针域
-    struct LinkList *intersectionNext;// 下一个是交点
+
+    int intersection;// 标识本节点的属性；-1表示头节点；0为实体多边形节点；1为裁剪多边形节点；2为交点
+    struct LinkList *mainNext;// 指针域
+    struct LinkList *extraNext;// 下一个是交点
+
+    LinkList(coordinate p, int l, bool u, int i, struct LinkList *mn, struct LinkList *en):
+        pos(p), lineAttribute(l), used(u), intersection(i), mainNext(mn), extraNext(en){};
 }linkList;
 
 
@@ -33,6 +34,8 @@ class MachineFusion{
 public:
     // 构造函数
     MachineFusion();
+    // 将工艺转换成链表
+    void machineToList();
     // 判断两个线段是否为交点
     inline bool isIntersection(coordinate a1,coordinate a2,coordinate b1,coordinate b2);
     // 如果两个线段相交，则求交点（通过引用进行返回值的传递）
