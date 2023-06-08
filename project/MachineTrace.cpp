@@ -18,7 +18,6 @@ MachineTrace::MachineTrace()
 
 void MachineTrace::getSharedMemory()
 {
-
     // 定义一个共享内存对象
     QSharedMemory sharedMemory;
     // 设置一个key标识共享内存
@@ -45,7 +44,6 @@ void MachineTrace::getSharedMemory()
     }
     // 读完后对共享内存进行解锁
     sharedMemory.unlock();
-
 }
 
 const Trace&  MachineTrace::getTrace()
@@ -55,13 +53,11 @@ const Trace&  MachineTrace::getTrace()
 
 bool MachineTrace::addPoint(const coordinate &p)
 {
-
     //先将末尾指针加1（循环数组满了的话覆盖）
     trace.end = (trace.end+1) % 10000;
     // 在末尾增加新节点
     trace.cord[trace.end].x = p.x;
     trace.cord[trace.end].y = p.y;
-
     //循环数组已经满了
     if(trace.end == trace.start){
         trace.start = (trace.start+1) % 10000;

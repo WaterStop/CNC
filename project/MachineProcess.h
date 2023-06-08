@@ -14,15 +14,18 @@
 @author：sen
 @time：2022.11.11
  */
-#include <MachineFusion.h>
-#include <MachineTrace.h>
-#include <MachineSequence.h>
-#include <Bar.h>
-#include <QPainter>
-#include <iostream>
+
 #include <fstream>
+#include <iostream>
 #include <QDebug>
+#include <QPainter>
+
+#include <Bar.h>
+#include <MachineFusion.h>
 #include <machineStruct.h>
+#include <MachineSequence.h>
+#include <MachineTrace.h>
+
 using namespace std;
 class MachineProcess{
 

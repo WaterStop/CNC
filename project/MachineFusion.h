@@ -1,6 +1,8 @@
 #ifndef MACHINEFUSION_H
 #define MACHINEFUSION_H
 
+#define ASSERT_CHECK 1
+
 #include <QDebug>
 #include<iostream>
 
@@ -21,11 +23,11 @@ typedef struct LinkList{
     bool used;// 用于多个输出多边形的情况（所有交点的used初值为0，当一个交点被输出时，其used域置为1）
 
     int intersection;// 标识本节点的属性；-1表示头节点；0为实体多边形节点；1为裁剪多边形节点；2为交点
-    struct LinkList *mainNext;// 指针域
-    struct LinkList *extraNext;// 下一个是交点
+    struct LinkList *entityNext;// 指针域
+    struct LinkList *cropNext;// 下一个是交点
 
     LinkList(coordinate p, int l, bool u, int i, struct LinkList *mn, struct LinkList *en):
-        pos(p), lineAttribute(l), used(u), intersection(i), mainNext(mn), extraNext(en){};
+        pos(p), lineAttribute(l), used(u), intersection(i), entityNext(mn), cropNext(en){};
 }linkList;
 
 
@@ -38,10 +40,15 @@ public:
     void machineToList();
     // 判断两个线段是否为交点
     inline bool isIntersection(coordinate a1,coordinate a2,coordinate b1,coordinate b2);
+    // 判断相交线段的进出性
+    bool isEntry(coordinate eStart, coordinate eEnd, coordinate cStart, coordinate cEnd);
+
+    // 求两个点的距离
+    double getDistance(coordinate p1, coordinate p2);
     // 如果两个线段相交，则求交点（通过引用进行返回值的传递）
-    void getIntersection(coordinate a1,coordinate a2,coordinate b1,coordinate b2, coordinate &res);
+    bool getIntersection(coordinate a1,coordinate a2,coordinate b1,coordinate b2, coordinate &res);
     // 多边形裁剪和工艺链表裁剪的融合
-    void fusion(linkList &entityList, linkList cropList);
+    void fusion(linkList *entityList, linkList *cropList);
 
 
 

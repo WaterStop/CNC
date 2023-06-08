@@ -1,4 +1,4 @@
-// 单例模式重新改造，因为轨迹数据具有唯一性，并且轨迹数组特别占用内存
+// TODO：单例模式重新改造，因为轨迹数据具有唯一性，并且轨迹数组特别占用内存
 
 #ifndef MACHINETRACE_H
 #define MACHINETRACE_H

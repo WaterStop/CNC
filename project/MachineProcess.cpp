@@ -5,8 +5,7 @@
 MachineProcess::MachineProcess(int canvasWidth, int canvasHeight, int barWidth, int barHeight, double trueBarWidth)
     :m_canvasWidth(canvasWidth), m_canvasHeight(canvasHeight), m_barWidth(barWidth), m_barHeight(barHeight/2), m_trueBarWidth(trueBarWidth)
 {
-    // 测试一下加一个形状
-
+    
 
     m_mSeq.setbar(barWidth, barHeight);
     // 防止未初始化而使用参数导致出错
@@ -17,6 +16,9 @@ MachineProcess::MachineProcess(int canvasWidth, int canvasHeight, int barWidth, 
     if(trueBarWidth == 0)
         cerr << "MachineProcess`s constructed function divide 0 error!!!";
     m_barScale = barWidth/trueBarWidth;
+    
+//test
+    MachineFusion fusion;
 
 }
 // 增加节点接口的多态封装（横向工艺，斜向工艺，横螺纹工艺，斜螺纹工艺，圆弧工艺）
