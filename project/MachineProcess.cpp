@@ -18,7 +18,9 @@ MachineProcess::MachineProcess(int canvasWidth, int canvasHeight, int barWidth, 
     m_barScale = barWidth/trueBarWidth;
     
 //test
-    MachineFusion fusion;
+    linkList *e = nullptr;
+    linkList *c = nullptr;
+    MachineFusion fusion(e,c);
 
 }
 // 增加节点接口的多态封装（横向工艺，斜向工艺，横螺纹工艺，斜螺纹工艺，圆弧工艺）
