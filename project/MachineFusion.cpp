@@ -35,7 +35,6 @@ MachineFusion::MachineFusion(linkList* entityList, linkList* cropList)
     linkList* e2 = new linkList({10, 10}, 1, 0, 0, nullptr, nullptr);
     linkList* e3 = new linkList({10, 0}, 1, 0, 0, nullptr, nullptr);
     linkList* e4 = new linkList({0, 0}, 1, 0, 0, nullptr, nullptr);
-
     entityCurPtr = e1;
     e1->entityNext = e2;
     e2->entityNext = e3;
@@ -45,17 +44,17 @@ MachineFusion::MachineFusion(linkList* entityList, linkList* cropList)
     test(e1,1);
 
     // 裁剪多边形链表节点(逆向，根据实际数控系统雕刻路径进行仿真来的)
-    linkList* c1 = new linkList({-5, 0}, 1, 0, 0, nullptr, nullptr);
-    linkList* c2 = new linkList({-5, -5}, 1, 0, 0, nullptr, nullptr);
-    linkList* c3 = new linkList({-1, -5}, 1, 0, 0, nullptr, nullptr);
-    linkList* c4 = new linkList({-1, 0}, 1, 0, 0, nullptr, nullptr);
+    linkList* c1 = new linkList({11, -2}, 1, 0, 0, nullptr, nullptr);
+    linkList* c2 = new linkList({11, 5}, 1, 0, 0, nullptr, nullptr);
+    linkList* c3 = new linkList({6, 5}, 1, 0, 0, nullptr, nullptr);
+    linkList* c4 = new linkList({6,-2}, 1, 0, 0, nullptr, nullptr);
     // 将裁剪多边形链表链接成单向循环链表
     cropCurPtr= c1;
     c1->cropNext = c2;
     c2->cropNext = c3;
     c3->cropNext = c4;
     c4->cropNext = c1;
-    test(c3,0);
+    test(c1,0);
 
 
     fusion(entityCurPtr, cropCurPtr);
@@ -410,7 +409,7 @@ linkList *MachineFusion::cropExit(linkList *entityList, linkList *entryPoint) {
                                                           0, 2, nullptr, nullptr);
                     // 向交点插入指向下一个的裁剪链表节点
                     intersection->entityNext =  entityCurPtr->entityNext;
-                    intersection->cropNext = cropCurPtr->cropNext;
+                    intersection->cropNext = cropCurPtr->cropNext;// 出点只需要上一个裁剪链表结点next域指向即可
                     cropCurPtr->cropNext = intersection;
                     return intersection;
                 }
@@ -453,15 +452,12 @@ void MachineFusion::fusion(linkList *entityList, linkList *cropList){
     cropCurPtr = first_Entry;
     do {
         // 在剩下的裁剪链表中找出点
-        entityCurPtr = cropExit(entityList, cropCurPtr);
+        entityCurPtr = cropExit(entityList, cropCurPtr);// 插入裁剪链表
         // 在剩下的实体链表中找进点
-        cropCurPtr =  entityEntry(entityCurPtr, cropList, first_Entry);
+        cropCurPtr =  entityEntry(entityCurPtr, cropList, first_Entry);// 插入实体链表
     } while (cropCurPtr != nullptr);
     // 输出实体链表
     ouputEntityList(first_Entry);
-
-
-
 
 /*
     // 形成交点与多边形的联合链表,每次拿一条实体多边形的边去求交裁剪多边形
@@ -572,6 +568,8 @@ void MachineFusion::fusion(linkList *entityList, linkList *cropList){
 #endif
 
 }
+
+
 // 生成链表
 bool MachineFusion::ouputEntityList(linkList *first_entry)
 {
@@ -606,12 +604,6 @@ linkList *MachineFusion::getResult()
 
 // 每次将`相邻的横向和斜向&&中间没有辅助工艺`的部分融合成一个工艺
 // G71的转换，需要将第一个交点到最后一个交点的路径部分转换成G71和G72
-
-
-
-
-
-
 
 
 
