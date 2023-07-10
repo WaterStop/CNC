@@ -44,6 +44,7 @@ private slots:
     void zhuiluowen_fixval_slot();
     void feed_fixval_slot();
     void edit_input_slot(QString str);
+    void updateTrCnCr();
 signals:
     void edit_press_signal();
     void goto_LuowenSet_signal();

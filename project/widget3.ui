@@ -55,7 +55,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="MyLineEdit" name="edit_4">
+   <widget class="QLineEdit" name="edit_4">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -84,7 +84,7 @@ background-color: rgb(60, 72, 102);</string>
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="MyLineEdit" name="edit_3">
+   <widget class="QLineEdit" name="edit_3">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -113,7 +113,7 @@ background-color: rgb(60, 72, 102);</string>
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="MyLineEdit" name="edit_5">
+   <widget class="QLineEdit" name="edit_5">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -142,7 +142,7 @@ background-color: rgb(60, 72, 102);</string>
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="MyLineEdit" name="edit_0">
+   <widget class="QLineEdit" name="edit_0">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -171,7 +171,7 @@ background-color: rgb(60, 72, 102);</string>
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="MyLineEdit" name="edit_1">
+   <widget class="QLineEdit" name="edit_1">
     <property name="geometry">
      <rect>
       <x>29</x>
@@ -475,7 +475,7 @@ background-color: rgb(60, 72, 102);</string>
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="MyLineEdit" name="edit_2">
+   <widget class="QLineEdit" name="edit_2">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -524,13 +524,6 @@ background-color: rgb(60, 72, 102);</string>
    <zorder>edit_2</zorder>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>MyLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>mylineedit.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

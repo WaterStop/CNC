@@ -51,6 +51,7 @@ void widget3_14::INFO_init()
     dir_2 = 1;
     ClearEdit();
     Foucus_init();
+    change_axisdir_icon();
 }
 
 void widget3_14::set_edit()
@@ -206,11 +207,11 @@ void widget3_14::change_axisdir_icon()
     }
     if(dir_2==1)
     {
-        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt2.png);}");
+        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt4.png);}");
     }
     else if(dir_2==-1)
     {
-        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt4.png);}");
+        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt2.png);}");
     }
 }
 
@@ -270,6 +271,9 @@ void widget3_14::loadWorkInfo(int index)
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->chamfer2.F);
         ui->edit_5->setText(str);
+        dir_1 = tem_val->chamfer2.zDir;
+        dir_2 = tem_val->chamfer2.xDir;
+        change_axisdir_icon();
     }
     else if(cur_work_mod==daojiao4)
     {
@@ -283,6 +287,9 @@ void widget3_14::loadWorkInfo(int index)
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->chamfer4.F);
         ui->edit_5->setText(str);
+        dir_1 = tem_val->chamfer4.zDir;
+        dir_2 = tem_val->chamfer4.xDir;
+        change_axisdir_icon();
     }
 }
 
@@ -294,19 +301,68 @@ void widget3_14::edit_input_slot(QString str)
     }
     else if(ui->edit_2->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(2,str);
     }
     else if(ui->edit_3->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(3,str);
     }
     else if(ui->edit_4->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(4,str);
     }
     else if(ui->edit_5->hasFocus())
     {
         emit edit_input_signal(5,str);
+    }
+}
+
+void widget3_14::updateTrCnCr()
+{
+    double feed;
+    double depth;
+    int times;
+    double Tr;
+    double Cr;
+    int Cn;
+    static double beforeTr;
+    static double beforeCr;
+    static int beforeCn;
+    QString str;
+    Tr = ui->edit_2->text().toDouble();
+    Cn = ui->edit_3->text().toInt();
+    Cr = ui->edit_4->text().toDouble();
+
+    feed = Cr / (double)Cn;
+    times = Cr / Tr;
+    depth = Tr * (double)Cn;
+
+    if(beforeTr != Tr)
+    {
+        str = QString("%1").arg(depth);
+        ui->edit_4->setText(str);
+        beforeTr = Tr;
+        beforeCn = Cn;
+        beforeCr = depth;
+    }
+    else if(beforeCn != Cn)
+    {
+        str = QString("%1").arg(depth);
+        ui->edit_4->setText(str);
+        beforeTr = Tr;
+        beforeCn = Cn;
+        beforeCr = depth;
+    }
+    else if(beforeCr != Cr && Cn != 0)
+    {
+        str = QString("%1").arg(feed);
+        ui->edit_2->setText(str);
+        beforeTr = feed;
+        beforeCn = Cn;
+        beforeCr = Cr;
     }
 }
 
@@ -327,7 +383,11 @@ bool widget3_14::wedget3_14ToProcessList(MachineProcess* dealInterfaceData, s_ch
     }
     else
     {
-        if (false == dealInterfaceData->addNode(*chamfer2))
+        if(modify_flg==1)
+        {
+            dealInterfaceData->changeNode(cur_Node, *chamfer2);
+        }
+        else  if (false == dealInterfaceData->addNode(*chamfer2))
         {
             return false;
         }
@@ -352,7 +412,11 @@ bool widget3_14::wedget3_14ToProcessList(MachineProcess* dealInterfaceData, s_ch
     }
     else
     {
-        if (false == dealInterfaceData->addNode(*chamfer4))
+        if(modify_flg==1)
+        {
+            dealInterfaceData->changeNode(cur_Node, *chamfer4);
+        }
+        else  if (false == dealInterfaceData->addNode(*chamfer4))
         {
             return false;
         }
@@ -397,6 +461,8 @@ void widget3_14::widget3_14_editDataToGCode()
         }
         save_flg = 0;
     }
+    dealInterfaceData->outputGCode_auto();
     dealInterfaceData->outputGCode();
     dealInterfaceData->textRecordData();
+    dealInterfaceData->recordVariable();
 }

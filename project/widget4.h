@@ -4,6 +4,10 @@
 #include <QWidget>
 #include "baseset.h"
 #include <cstdlib>
+#include "gaugeround.h"
+#include "progressring.h"
+#include "widget4_text.h"
+
 namespace Ui {
 class widget4;
 }
@@ -26,7 +30,19 @@ private:
     void info_init();
     void update_workstate();
     void show_move_state(int index);
-    QTimer *timer = new QTimer;
+    void draw_prossbar(int x,int y);
+    int get_probar1_val();
+    int get_probar2_val();
+    void paintEvent(QPaintEvent *);
+    QLabel *lb[8];
+    QLabel *bar_bk;
+    //GaugeRound *probar;
+    ProgressRing *axis_pro;
+    widget4_text *text_lev;
+
+    //QTimer *timer = new QTimer;
+public slots:
+    void Timer_on_slot();
 public slots:
     void set_wg4_button_solt();
     void set_wg4_button_solt2();
@@ -40,7 +56,6 @@ public slots:
     void set_wg4_button_MainAxis_F();//主轴顺时针
     void set_wg4_button_MainAxis_R();//主轴逆时针
     void set_wg4_button_MainAxis_S();//主轴停
-    void Timer_on_slot();
 };
 
 #endif // WIDGET4_H

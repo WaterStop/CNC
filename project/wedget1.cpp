@@ -17,6 +17,7 @@ wedget1::wedget1(QWidget *parent) :
     //connect(ui->progressBar,SIGNAL(valueChanged(int)),this,SLOT(set_proBar_value_solt(int)));
     //machineinfo = new MachineSequene();
     ui->progressBar->hide();
+
 }
 
 wedget1::~wedget1()
@@ -141,107 +142,96 @@ void wedget1::DealSlot()
     connect(ui->bt_4, SIGNAL(pressed()), this, SLOT(bt_4_slot_l()));
     connect(timer, SIGNAL(timeout()), this, SLOT(long_press_slot()));
 
-
 }
 
 void wedget1::bt_0_slot_l()
 {
+    cur_Node = 1;
     press_long = 0;
     timer->start(500);
 }
 
 void wedget1::bt_1_slot_l()
 {
+    cur_Node = 2;
     press_long = 0;
     timer->start(500);
 }
 void wedget1::bt_2_slot_l()
 {
+    cur_Node = 3;
     press_long = 0;
     timer->start(500);
 }
+
 void wedget1::bt_3_slot_l()
 {
+    cur_Node = 4;
     press_long = 0;
     timer->start(500);
 }
+
 void wedget1::bt_4_slot_l()
 {
+    cur_Node = 5;
     press_long = 0;
     timer->start(500);
 }
+
 void wedget1::long_press_slot()
 {
     press_long =1;
+    timer->stop();
+    emit long_press_signal(cur_Node);
 }
 
 void wedget1::bt_0_slot()
 {
-    cur_Node = 1;
     if(press_long==0)
     {
         modify_flg = 1;
+        timer->stop();
         emit bt_signal(cur_Node);
-    }
-    else if(press_long==1)
-    {
-        emit long_press_signal(1);
     }
 }
 
 void wedget1::bt_1_slot()
 {
-    cur_Node = 2;
     if(press_long==0)
     {
         modify_flg = 1;
+        timer->stop();
         emit bt_signal(cur_Node);
-    }
-    else if(press_long==1)
-    {
-        emit long_press_signal(2);
     }
 }
 
 void wedget1::bt_2_slot()
 {
-    cur_Node = 3;
     if(press_long==0)
     {
         modify_flg = 1;
+        timer->stop();
         emit bt_signal(cur_Node);
-    }
-    else if(press_long==1)
-    {
-        emit long_press_signal(3);
     }
 }
 
 void wedget1::bt_3_slot()
 {
-    cur_Node = 4;
     if(press_long==0)
     {
         modify_flg = 1;
+        timer->stop();
         emit bt_signal(cur_Node);
-    }
-    else if(press_long==1)
-    {
-        emit long_press_signal(4);
     }
 }
 
 void wedget1::bt_4_slot()
 {
-    cur_Node = 5;
     if(press_long==0)
     {
         modify_flg = 1;
+        timer->stop();
         emit bt_signal(cur_Node);
-    }
-    else if(press_long==1)
-    {
-        emit long_press_signal(5);
     }
 }
 

@@ -36,6 +36,8 @@ private:
     QPushButton* bt_fun_right[8];
     plc_fun_cmd* func_popwin;
     PLC_plc_pic* plc_w;
+public slots:
+    void Timer_on_slot();
 private slots:
     void RIGHT_FUN0_slot();
     void RIGHT_FUN1_slot();

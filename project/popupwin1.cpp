@@ -575,7 +575,6 @@ void PopupWin1::set_DingZhi_pic()
 
 void PopupWin1::Deal_cur_wormod()
 {
-    qDebug()<<"last mod赋值";
     last_work_mod = cur_work_mod;
     if(work_path==WAIYUAN)
     {

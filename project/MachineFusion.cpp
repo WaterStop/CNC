@@ -10,6 +10,7 @@ MachineFusion::MachineFusion(linkList* entityList, linkList* cropList)
     :entityList_(entityList), cropList_(cropList)
 {
 
+
     // 打印测试链表
     auto test =  [](linkList *cur, bool flag){
         linkList *head = cur;
@@ -45,9 +46,9 @@ MachineFusion::MachineFusion(linkList* entityList, linkList* cropList)
 
     // 裁剪多边形链表节点(逆向，根据实际数控系统雕刻路径进行仿真来的)
     linkList* c1 = new linkList({11, -2}, 1, 0, 0, nullptr, nullptr);
-    linkList* c2 = new linkList({11, 5}, 1, 0, 0, nullptr, nullptr);
-    linkList* c3 = new linkList({6, 5}, 1, 0, 0, nullptr, nullptr);
-    linkList* c4 = new linkList({6,-2}, 1, 0, 0, nullptr, nullptr);
+    linkList* c2 = new linkList({13, 0}, 1, 0, 0, nullptr, nullptr);
+    linkList* c3 = new linkList({11, 2}, 1, 0, 0, nullptr, nullptr);
+    linkList* c4 = new linkList({9, 0}, 1, 0, 0, nullptr, nullptr);
     // 将裁剪多边形链表链接成单向循环链表
     cropCurPtr= c1;
     c1->cropNext = c2;
@@ -94,13 +95,6 @@ MachineFusion::MachineFusion(linkList* entityList, linkList* cropList)
     }
     qDebug() << res.x << ","<< res.y<<endl;
     */
-
-
-
-
-
-
-
 }
 
 
@@ -205,9 +199,11 @@ inline bool MachineFusion::isEntry(coordinate eStart, coordinate eEnd, coordinat
 #endif
 }
 
-// 判断两个线段是否重合
+// 判断两个线段是否重合,
 bool MachineFusion::overlap(coordinate a1, coordinate a2, coordinate b1, coordinate b2)
 {
+    //TODO:只有端点在直线上的时候
+    //TODO:取交点的附近一点判断是否在直线上
     // 判断是否有交点
     if (isIntersection(a1, a2, b1, b2)) {
         // 向量法求交点
@@ -220,8 +216,6 @@ bool MachineFusion::overlap(coordinate a1, coordinate a2, coordinate b1, coordin
         }
     }
     return false;
-
-
 }
 
 // 功能:将实体链表和裁剪链表中重合的部分进行分离
@@ -264,7 +258,7 @@ bool MachineFusion::separateOverlap(linkList *entityList, linkList *cropList)
     }while(entityCurPtr != entityList);
     return true;
 }
-//
+
 bool MachineFusion::isShapeIntersect(linkList *entityList, linkList *cropList)
 {
     // 分别指向实体多边形和裁剪多边形的当前处理节点
@@ -428,11 +422,11 @@ linkList *MachineFusion::cropExit(linkList *entityList, linkList *entryPoint) {
 // 输入：实体多边形链表和裁剪多边形链表
 // 输出：以引用的形式返回裁剪后的实体多边形链表
 void MachineFusion::fusion(linkList *entityList, linkList *cropList){
+    // TODO: 两个多边形只重合一个点,并且重合的部分不平行
+
     // 分别指向实体多边形和裁剪多边形的当前处理节点
     linkList *entityCurPtr = entityList;
     linkList *cropCurPtr = cropList;
-    // 如果没有相交的则
-
 
     // 分离重合的实体多边形和裁剪多边形的边
     if(!separateOverlap(entityList, cropList))

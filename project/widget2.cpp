@@ -4,6 +4,8 @@
 static int work_mode = 0;
 static int top_mode = 0;
 static int pic_ischanged =0;//工艺图是否经过变换，0为否，1为是
+static bool bar_pic = 0;//棒料工艺图是否可见 0：否 1：是
+
 widget2::widget2(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::widget2)
@@ -61,16 +63,36 @@ void widget2::Info_init()
     {
         bt_showindex[i] = new QPushButton(this);
         bt_showindex[i]->setGeometry(0,0,50,30);
+        bt_showindex[i]->raise();
         bt_showindex[i]->hide();
+        bt_showindex[i]->setStyleSheet("background:transparent;");
     }
     set_wg2_button();
-    work_pic = new widget2_workpic(this);
+    work_pic = new widget2_workpic(ui->frame);
+    work_pic->setGeometry(100,100,400,320);
+    work_pic->hide();
+    bt_barpic = new QPushButton(ui->frame);
+    bt_barpic->setGeometry(420,20,30,30);
+    bt_barpic->setStyleSheet("background:transparent;");
+    bt_barpic->setFocusPolicy(Qt::NoFocus);
+
+
 }
 
 void widget2::set_wg2_button()
 {
     ui->l_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_l_bt.png);}");
     ui->knife_dir->setStyleSheet("QLabel{border-image:url(:/new/blue_pic/knife_dir.png);}");
+    work_mode = gui_ctl->current_mode;
+    if(gui_ctl->request_g96==0)
+    {
+        ui->b_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt_off.png);}");
+
+    }
+    else if(gui_ctl->request_g96==1)
+    {
+        ui->b_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt_on.png);}");
+    }
     set_wg2_t_button();
     set_wg2_b_button();
 
@@ -87,7 +109,7 @@ void widget2::set_wg2_button()
         ui->b_but->setGeometry(67,307,29,25);
         ui->b_but2->setGeometry(135,307,29,25);
         ui->b_but3->setGeometry(200,307,29,25);
-        ui->b_but4->setGeometry(264,307,38,23);
+        ui->b_but4->setGeometry(264,307,29,25);
 
         ui->widget->setGeometry(7,46,78,265);
     }
@@ -99,63 +121,90 @@ void widget2::set_wg2_button()
         ui->t_but4->setGeometry(152,20,25,25);
         ui->t_but5->setGeometry(192,20,25,25);
         ui->t_but6->setGeometry(235,20,25,25);
-        ui->t_but7->setGeometry(275,20,25,25);
+
 
         ui->l_but->setGeometry(7,240,32,73);
 
-        ui->b_but->setGeometry(87,393,38,32);
-        ui->b_but2->setGeometry(173,393,38,32);
-        ui->b_but3->setGeometry(257,393,38,32);
-        ui->b_but4->setGeometry(338,393,49,30);
+        ui->b_but->setGeometry(90,393,38,32);
+        ui->b_but2->setGeometry(140,393,38,32);
+        ui->b_but3->setGeometry(190,393,38,32);
+        ui->b_but4->setGeometry(240,393,38,32);
 
         ui->widget->setGeometry(10,60,100,340);
         ui->knife_dir->setGeometry(350,280,90,90);
     }
+
 }
 
 void widget2::DealSlot()
 {
     connect(ui->b_but,SIGNAL(clicked()),this,SLOT(set_wg2_workmode_slot()));
-    //connect(ui->b_but2,SIGNAL(clicked()),this,SLOT(set_wg2_workmode1_slot()));
+    connect(ui->b_but2,SIGNAL(clicked()),this,SLOT(set_wg2_workmod1_slot()));
     connect(ui->b_but3,SIGNAL(clicked()),this,SLOT(set_wg2_workmode2_slot()));
     connect(ui->b_but4,SIGNAL(clicked()),this,SLOT(set_wg2_workmode3_slot()));
     connect(ui->l_but,SIGNAL(clicked()),this,SLOT(show_wg2_popwin_slot()));
-    connect(ui->t_but,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot()));
-    connect(ui->t_but2,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot1()));
-    connect(ui->t_but3,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot2()));
-    connect(ui->t_but4,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot3()));
-    connect(ui->t_but5,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot4()));
-    connect(ui->t_but6,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot5()));
-    connect(ui->t_but7,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot6()));
+//    connect(ui->t_but,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot()));
+//    connect(ui->t_but2,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot1()));
+//    connect(ui->t_but3,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot2()));
+//    connect(ui->t_but4,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot3()));
+//    connect(ui->t_but5,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot4()));
+//    connect(ui->t_but6,SIGNAL(clicked()),this,SLOT(set_wg2_t_button_slot5()));
+
+    connect(bt_showindex[0],SIGNAL(clicked()),this,SLOT(jump_bt_slot()));
+    connect(bt_showindex[1],SIGNAL(clicked()),this,SLOT(jump_bt_slot1()));
+    connect(bt_showindex[2],SIGNAL(clicked()),this,SLOT(jump_bt_slot2()));
+    connect(bt_showindex[3],SIGNAL(clicked()),this,SLOT(jump_bt_slot3()));
+    connect(bt_showindex[4],SIGNAL(clicked()),this,SLOT(jump_bt_slot4()));
+    connect(bt_showindex[5],SIGNAL(clicked()),this,SLOT(jump_bt_slot5()));
+    connect(bt_showindex[6],SIGNAL(clicked()),this,SLOT(jump_bt_slot6()));
+    connect(bt_showindex[7],SIGNAL(clicked()),this,SLOT(jump_bt_slot7()));
+    connect(bt_showindex[8],SIGNAL(clicked()),this,SLOT(jump_bt_slot8()));
+
+    connect(bt_barpic,SIGNAL(clicked()),this,SLOT(deal_barpic_slot()));
 
 
 }
 
 void widget2::set_wg2_workmode_slot()
 {
-    work_mode = 0;
-    set_wg2_b_button();
+    //work_mode = 0;
+    //set_wg2_b_button();
+    if(gui_ctl->request_g96==0)
+    {
+        gui_ctl->request_g96 = 1;
+        ui->b_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt_on.png);}");
+
+    }
+    else if(gui_ctl->request_g96==1)
+    {
+        gui_ctl->request_g96 = 0;
+        ui->b_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt_off.png);}");
+    }
+
 }
 
-void widget2::set_wg2_workmod1_slot()//未生效
-{
-    work_mode = 1;
-    set_wg2_b_button();
-}
-void widget2::set_wg2_workmode2_slot()
+void widget2::set_wg2_workmod1_slot()//手动
 {
     work_mode = 2;
+    gui_ctl->current_mode = 2;
     set_wg2_b_button();
 }
-void widget2::set_wg2_workmode3_slot()
+void widget2::set_wg2_workmode2_slot()//单循环
 {
-    work_mode = 3;
+    work_mode = 1;
+    gui_ctl->current_mode = 1;
+    set_wg2_b_button();
+}
+void widget2::set_wg2_workmode3_slot()//自动
+{
+    work_mode = 0;
+    gui_ctl->current_mode = 0;
     set_wg2_b_button();
 }
 
 void widget2::on_b_but2_clicked()
 {
-    work_mode = 1;
+    //work_mode = 1;
     set_wg2_b_button();
 }
 
@@ -182,9 +231,90 @@ void widget2::show_wg2_popwin_slot()
     }
 }
 
+
+void widget2::jump_bt_slot()
+{    
+    emit page_jump_signal(0);
+}
+
+void widget2::jump_bt_slot1()
+{    
+    emit page_jump_signal(1);
+}
+
+void widget2::jump_bt_slot2()
+{
+    if(input_ok_flg==1)
+    {
+        emit page_jump_signal(2);
+    }
+}
+
+void widget2::jump_bt_slot3()
+{
+    if(input_ok_flg==1)
+    {
+        emit page_jump_signal(3);
+    }
+}
+
+void widget2::jump_bt_slot4()
+{
+    if(input_ok_flg==1)
+    {
+        emit page_jump_signal(4);
+    }
+}
+
+void widget2::jump_bt_slot5()
+{
+    if(input_ok_flg==1)
+    {
+        emit page_jump_signal(5);
+    }
+}
+
+void widget2::jump_bt_slot6()
+{
+    if(input_ok_flg==1)
+    {
+        emit page_jump_signal(6);
+    }
+}
+
+void widget2::jump_bt_slot7()
+{
+    if(input_ok_flg==1)
+    {
+        emit page_jump_signal(7);
+    }
+}
+
+void widget2::jump_bt_slot8()
+{
+    if(input_ok_flg==1)
+    {
+        emit page_jump_signal(8);
+    }
+}
+
+void widget2::deal_barpic_slot()
+{
+    bar_pic = 1-bar_pic;
+    if(bar_pic)
+    {
+        work_pic->show();
+    }
+    else
+    {
+        work_pic->hide();
+    }
+    update();
+}
+
 void widget2::set_wg2_b_button()
 {
-    ui->b_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt_off.png);}");
+    //ui->b_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt_off.png);}");
     ui->b_but2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt2_off.png);}");
     ui->b_but3->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt3_off.png);}");
     ui->b_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt4_off.png);}");
@@ -192,16 +322,13 @@ void widget2::set_wg2_b_button()
     switch(work_mode)
     {
         case 0:
-        ui->b_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt_on.png);}");
+        ui->b_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt4_on.png);}");
         break;
         case 1:
-        ui->b_but2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt2_on.png);}");
-        break;
-        case 2:
         ui->b_but3->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt3_on.png);}");
         break;
-        case 3:
-        ui->b_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt4_on.png);}");
+        case 2:
+        ui->b_but2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_b_bt2_on.png);}");
         break;
         default:
         break;
@@ -216,7 +343,6 @@ void widget2::set_wg2_t_button()
     ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4.png);}");
     ui->t_but5->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt5.png);}");
     ui->t_but6->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt6.png);}");
-    ui->t_but7->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt7.png);}");
 
 
     switch(top_mode)
@@ -238,9 +364,6 @@ void widget2::set_wg2_t_button()
         break;
         case 6:
         ui->t_but6->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt6_on.png);}");
-        break;
-        case 7:
-        ui->t_but7->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt7_on.png);}");
         break;
         default:
         break;
@@ -621,7 +744,7 @@ void widget2::DrawWaiYuan1()
     painter.drawLine(130,80,130,95);
     painter.drawLine(300,80,300,95);
     painter.drawLine(130,87,300,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->outerCircle1.L);
     }
@@ -636,7 +759,7 @@ void widget2::DrawWaiYuan1()
     painter.drawLine(305,190,320,190);
     painter.drawLine(312,100,312,190);
     QString text_cr ;
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->outerCircle1.Cr);
     }
@@ -654,7 +777,7 @@ void widget2::DrawWaiYuan1()
     painter.drawLine(305,325,320,325);
     painter.drawLine(312,315,312,325);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->outerCircle1.Tr);
     }
@@ -737,6 +860,7 @@ void widget2::DrawWaiYuan1()
 
     //DrawKnife();
     DrawKnife3(305,328);
+    //dealInterfaceData->barPaint(painter);
 
     painter.end();
 }
@@ -873,7 +997,7 @@ void widget2::DrawWaiYuan2()
     painter.drawLine(130,80,130,95);
     painter.drawLine(315,80,315,95);
     painter.drawLine(130,87,315,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->outerCircle2.L);
     }
@@ -895,7 +1019,7 @@ void widget2::DrawWaiYuan2()
     painter.drawLine(320,155,335,155);
     painter.drawLine(327,100,327,155);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->outerCircle2.Cr);
     }
@@ -913,7 +1037,7 @@ void widget2::DrawWaiYuan2()
     painter.drawLine(320,335,335,335);
     painter.drawLine(327,325,327,335);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->outerCircle2.Tr);
     }
@@ -1092,7 +1216,7 @@ void widget2::DrawWaiYuan3()
     painter.drawLine(220,80,220,95);
     painter.drawLine(300,80,300,95);
     painter.drawLine(220,87,300,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->outerCircle3.L);
     }
@@ -1116,7 +1240,7 @@ void widget2::DrawWaiYuan3()
     painter.drawLine(305,145,320,145);
     painter.drawLine(312,100,312,145);
     QString text_c = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->outerCircle3.Cr);
     }
@@ -1133,7 +1257,7 @@ void widget2::DrawWaiYuan3()
     painter.drawLine(305,320,320,320);
     painter.drawLine(312,310,312,320);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->outerCircle3.Tr);
     }
@@ -1313,7 +1437,7 @@ void widget2::DrawDuanMian1()
     painter.drawLine(205,80,205,95);
     painter.drawLine(250,80,250,95);
     painter.drawLine(205,87,250,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("CT=%1").arg(tem_val->endFace1.CT);
     }
@@ -1328,7 +1452,7 @@ void widget2::DrawDuanMian1()
     painter.drawLine(255,180,270,180);
     painter.drawLine(263,100,263,180);
     QString text_lr = "Lr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Lr=%1").arg(tem_val->endFace1.Lr);
     }
@@ -1345,7 +1469,7 @@ void widget2::DrawDuanMian1()
     painter.drawLine(245,325-t_y,245,335-t_y);
     painter.drawLine(255,325-t_y,255,335-t_y);
     painter.drawLine(245,330-t_y,255,330-t_y);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("△T=%1").arg(tem_val->endFace1.deltaT);
     }
@@ -1531,13 +1655,13 @@ void widget2::DrawDuanMian2()
     painter.drawLine(205,80,205,95);
     painter.drawLine(250,80,250,95);
     painter.drawLine(205,87,250,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("W=%1").arg(tem_val->endFace2.W);
     }
     else
     {
-        str = QString("Cr=%1").arg(edit_str[3]);
+        str = QString("W=%1").arg(edit_str[3]);
     }
     painter.drawText(215,82,str);
 
@@ -1546,7 +1670,7 @@ void widget2::DrawDuanMian2()
     painter.drawLine(255,180,270,180);
     painter.drawLine(263,100,263,180);
     QString text_lr = "Lr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Lr=%1").arg(tem_val->endFace2.Lr);
     }
@@ -1568,7 +1692,7 @@ void widget2::DrawDuanMian2()
     painter.drawLine(205,325,215,325);
     painter.drawLine(210,315,210,325);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->endFace2.Tr);
     }
@@ -1738,7 +1862,7 @@ void widget2::DrawDuanMian3()
     painter.drawLine(205,160,205,170);
     painter.drawLine(295,160,295,170);
     painter.drawLine(205,165,295,165);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("CT=%1").arg(tem_val->endFace3.CT);
     }
@@ -1752,7 +1876,7 @@ void widget2::DrawDuanMian3()
     painter.drawLine(320,290,330,290);
     painter.drawLine(325,210,325,290);
     QString text_lr = "Lr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Lr=%1").arg(tem_val->endFace3.Lr);
     }
@@ -1768,7 +1892,7 @@ void widget2::DrawDuanMian3()
     painter.drawLine(285,220,285,230);
     painter.drawLine(295,220,295,230);
     painter.drawLine(285,225,295,225);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("△T=%1").arg(tem_val->endFace3.deltaT);
     }
@@ -1960,7 +2084,7 @@ void widget2::DrawLiKong1()
     painter.drawLine(120,80,120,95);
     painter.drawLine(300,80,300,95);
     painter.drawLine(120,87,300,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->innerHole1.L);
     }
@@ -1975,7 +2099,7 @@ void widget2::DrawLiKong1()
     painter.drawLine(305,180,320,180);
     painter.drawLine(312,130,312,180);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->innerHole1.Cr);
     }
@@ -1993,7 +2117,7 @@ void widget2::DrawLiKong1()
     painter.drawLine(305-a,250,320-a,250);
     painter.drawLine(312-a,240,312-a,250);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->innerHole1.Tr);
     }
@@ -2188,7 +2312,7 @@ void widget2::DrawLiKong2()
     painter.drawLine(120,80,120,95);
     painter.drawLine(300,80,300,95);
     painter.drawLine(120,87,300,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->innerHole2.L);
     }
@@ -2203,7 +2327,7 @@ void widget2::DrawLiKong2()
     painter.drawLine(305,180,320,180);
     painter.drawLine(312,130,312,180);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->innerHole2.L);
     }
@@ -2221,7 +2345,7 @@ void widget2::DrawLiKong2()
     painter.drawLine(305-a,250,320-a,250);
     painter.drawLine(312-a,240,312-a,250);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->innerHole2.Tr);
     }
@@ -2426,7 +2550,7 @@ void widget2::DrawLiKong3()
     painter.drawLine(210,80,210,130);
     painter.drawLine(260,80,260,130);
     painter.drawLine(210,87,300,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("W=%1").arg(tem_val->innerHole3.W);
     }
@@ -2436,7 +2560,7 @@ void widget2::DrawLiKong3()
     }
     painter.drawText(220,82,str);
     painter.drawLine(300,80,300,95);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("W1=%1").arg(tem_val->innerHole3.W1);
     }
@@ -2451,7 +2575,7 @@ void widget2::DrawLiKong3()
     painter.drawLine(305,150,320,150);
     painter.drawLine(312,130,312,150);
     QString text_cr = "Lr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Lr=%1").arg(tem_val->innerHole3.Lr);
     }
@@ -2468,7 +2592,7 @@ void widget2::DrawLiKong3()
     painter.drawLine(305,280,320,280);
     painter.drawLine(312,270,312,280);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->innerHole3.Tr);
     }
@@ -2484,7 +2608,7 @@ void widget2::DrawLiKong3()
 //    painter.drawLine(315,255,315,265);
 //    painter.drawLine(325,255,325,265);
     painter.drawLine(305,250,335,250);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tw=%1").arg(tem_val->innerHole3.Tw);
     }
@@ -2722,7 +2846,7 @@ void widget2::DrawLiKong4()
     painter.drawLine(240,80,240,177);
     painter.drawLine(300,80,300,95);
     painter.drawLine(240,87,300,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->innerHole4.L);
     }
@@ -2737,7 +2861,7 @@ void widget2::DrawLiKong4()
     painter.drawLine(240,180,320,180);
     painter.drawLine(312,100,312,180);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->innerHole4.Cr);
     }
@@ -2764,7 +2888,7 @@ void widget2::DrawLiKong4()
     painter.drawLine(305-a,245,320-a,245);
     painter.drawLine(312-a,235,312-a,245);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->innerHole4.Tr);
     }
@@ -2960,7 +3084,7 @@ void widget2::DrawLiKong5()
     painter.drawLine(220,80,220,180);
     painter.drawLine(300,80,300,95);
     painter.drawLine(220,87,300,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->innerHole5.L);
     }
@@ -2974,7 +3098,7 @@ void widget2::DrawLiKong5()
     painter.drawLine(280,170,280,180);
     painter.drawLine(298,170,298,180);
     painter.drawLine(280,175,298,175);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("△T=%1").arg(tem_val->innerHole5.deltaT);
     }
@@ -2987,7 +3111,7 @@ void widget2::DrawLiKong5()
     painter.drawLine(305,240,305,250);
     painter.drawLine(320,240,320,250);
     painter.drawLine(305,245,320,245);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("BT=%1").arg(tem_val->innerHole5.BT);
     }
@@ -3163,7 +3287,7 @@ void widget2::DrawZhuiMian2()
     painter.drawLine(130,80,130,95);
     painter.drawLine(315,80,315,95);
     painter.drawLine(130,87,315,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->coneFace2.L);
     }
@@ -3184,7 +3308,7 @@ void widget2::DrawZhuiMian2()
     painter.drawLine(110,170,125,170);
     painter.drawLine(117,100,117,170);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->coneFace2.Cr);
     }
@@ -3201,7 +3325,7 @@ void widget2::DrawZhuiMian2()
     painter.drawLine(320,335,335,335);
     painter.drawLine(327,325,327,335);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->coneFace2.Tr);
     }
@@ -3386,7 +3510,7 @@ void widget2::DrawZhuiMian3()
     painter.drawLine(130,80,130,95);
     painter.drawLine(315,80,315,95);
     painter.drawLine(130,87,315,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->coneFace3.L);
     }
@@ -3407,7 +3531,7 @@ void widget2::DrawZhuiMian3()
     painter.drawLine(320,155,335,155);
     painter.drawLine(327,100,327,155);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->coneFace3.Cr);
     }
@@ -3424,7 +3548,7 @@ void widget2::DrawZhuiMian3()
     painter.drawLine(325,290,340,290);
     painter.drawLine(332,280,332,290);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->coneFace3.Tr);
     }
@@ -3609,7 +3733,7 @@ void widget2::DrawZhuiMian4()
     painter.drawLine(130,80,130,95);
     painter.drawLine(315,80,315,95);
     painter.drawLine(130,87,315,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->coneFace4.L);
     }
@@ -3630,7 +3754,7 @@ void widget2::DrawZhuiMian4()
     painter.drawLine(110,170,125,170);
     painter.drawLine(117,100,117,170);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->coneFace4.Cr);
     }
@@ -3648,7 +3772,7 @@ void widget2::DrawZhuiMian4()
     painter.drawLine(320,335-a,335,335-a);
     painter.drawLine(327,325-a,327,335-a);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->coneFace4.Tr);
     }
@@ -3859,7 +3983,7 @@ void widget2::DrawLuoWen1()
     painter.drawLine(120,107,120,133);
     painter.drawLine(285,107,285,163);
     painter.drawLine(120,107,285,107);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->screwThread1.L);
     }
@@ -3872,7 +3996,7 @@ void widget2::DrawLuoWen1()
     painter.drawLine(210,120,210,133);
     painter.drawLine(240,120,240,133);
     painter.drawLine(210,120,240,120);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tp=%1").arg(tem_val->screwThread1.Tp);
     }
@@ -3885,7 +4009,7 @@ void widget2::DrawLuoWen1()
     painter.drawLine(295,305,310,305);
     painter.drawLine(295,285,310,285);
     painter.drawLine(300,285,300,305);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->screwThread1.Tr);
     }
@@ -3902,7 +4026,7 @@ void widget2::DrawLuoWen1()
     painter.drawLine(285,163,295,163);
     painter.drawLine(295,133,295,163);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->screwThread1.Cr);
     }
@@ -4116,7 +4240,7 @@ void widget2::DrawLuoWen2()
     painter.drawLine(130,80,130,95);
     painter.drawLine(315,80,315,200);
     painter.drawLine(130,87,315,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->screwThread2.L);
     }
@@ -4129,7 +4253,7 @@ void widget2::DrawLuoWen2()
     painter.drawLine(193,130,200,115);
     painter.drawLine(227,145,235,130);
     painter.drawLine(200,115,235,130);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tp=%1").arg(tem_val->screwThread2.Tp);
     }
@@ -4151,7 +4275,7 @@ void widget2::DrawLuoWen2()
     painter.drawLine(315,200,340,210);
     painter.drawLine(345,190,340,210);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->screwThread2.Cr);
     }
@@ -4168,7 +4292,7 @@ void widget2::DrawLuoWen2()
     painter.drawLine(320,290,335,290);
     painter.drawLine(327,280,327,290);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->screwThread2.Tr);
     }
@@ -4390,7 +4514,7 @@ void widget2::DrawLuoWen3()
     painter.drawLine(130,80,130,95);
     painter.drawLine(285,80,285,95);
     painter.drawLine(130,87,285,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->screwThread3.L);
     }
@@ -4403,7 +4527,7 @@ void widget2::DrawLuoWen3()
     painter.drawLine(165,170,165,190);
     painter.drawLine(195,170,195,190);
     painter.drawLine(165,180,195,180);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tp=%1").arg(tem_val->screwThread3.Tp);
     }
@@ -4417,7 +4541,7 @@ void widget2::DrawLuoWen3()
     painter.drawLine(290,170,310,170);
     painter.drawLine(300,133,300,170);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->screwThread3.Cr);
     }
@@ -4434,7 +4558,7 @@ void widget2::DrawLuoWen3()
     painter.drawLine(320,235,335,235);
     painter.drawLine(327,215,327,235);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->screwThread3.Tr);
     }
@@ -4654,7 +4778,7 @@ void widget2::DrawLuoWen4()
     painter.drawLine(130,80,130,95);
     painter.drawLine(315,80,315,200);
     painter.drawLine(130,87,315,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->screwThread4.L);
     }
@@ -4667,7 +4791,7 @@ void widget2::DrawLuoWen4()
     painter.drawLine(210,160,220,180);
     painter.drawLine(245,150,252,162);
     painter.drawLine(220,180,252,162);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tp=%1").arg(tem_val->screwThread4.Tp);
     }
@@ -4689,7 +4813,7 @@ void widget2::DrawLuoWen4()
     painter.drawLine(315,130,340,122);
     painter.drawLine(330,95,340,122);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->screwThread4.Cr);
     }
@@ -4706,7 +4830,7 @@ void widget2::DrawLuoWen4()
     painter.drawLine(320,265,335,265);
     painter.drawLine(327,255,327,265);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->screwThread4.Tr);
     }
@@ -4894,7 +5018,7 @@ void widget2::DrawDaoJiao1()
     painter.drawLine(250,80,250,95);
     painter.drawLine(290,80,290,95);
     painter.drawLine(250,87,290,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->chamfer1.L);
     }
@@ -4908,7 +5032,7 @@ void widget2::DrawDaoJiao1()
     painter.drawLine(290,140,310,140);
     painter.drawLine(300,100,300,140);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->chamfer1.Cr);
     }
@@ -4925,7 +5049,7 @@ void widget2::DrawDaoJiao1()
     painter.drawLine(295,325,315,325);
     painter.drawLine(305,305,305,325);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->chamfer1.Tr);
     }
@@ -5112,7 +5236,7 @@ void widget2::DrawDaoJiao2()
     painter.drawLine(250,80,250,95);
     painter.drawLine(290,80,290,95);
     painter.drawLine(250,87,290,87);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->chamfer2.L);
     }
@@ -5126,7 +5250,7 @@ void widget2::DrawDaoJiao2()
     painter.drawLine(290,140,310,140);
     painter.drawLine(300,100,300,140);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->chamfer2.Cr);
     }
@@ -5143,7 +5267,7 @@ void widget2::DrawDaoJiao2()
     painter.drawLine(295,325,315,325);
     painter.drawLine(305,305,305,325);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->chamfer2.Tr);
     }
@@ -5357,7 +5481,7 @@ void widget2::DrawDaoJiao3()
     painter.drawLine(240,180,240,190);
     painter.drawLine(300,180,300,190);
     painter.drawLine(240,185,300,185);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->chamfer3.L);
     }
@@ -5372,7 +5496,7 @@ void widget2::DrawDaoJiao3()
     painter.drawLine(305,180,320,180);
     painter.drawLine(312,100,312,180);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->chamfer3.Cr);
     }
@@ -5397,7 +5521,7 @@ void widget2::DrawDaoJiao3()
     painter.drawLine(305-a,245,320-a,245);
     painter.drawLine(312-a,235,312-a,245);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->chamfer3.Tr);
     }
@@ -5592,7 +5716,7 @@ void widget2::DrawDaoJiao4()
     painter.drawLine(225,180,225,190);
     painter.drawLine(300,180,300,190);
     painter.drawLine(225,185,300,185);
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("L=%1").arg(tem_val->chamfer4.L);
     }
@@ -5607,7 +5731,7 @@ void widget2::DrawDaoJiao4()
     painter.drawLine(305,180,320,180);
     painter.drawLine(312,100,312,180);
     QString text_cr = "Cr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Cr=%1").arg(tem_val->chamfer4.Cr);
     }
@@ -5635,7 +5759,7 @@ void widget2::DrawDaoJiao4()
     painter.drawLine(305-a,250,320-a,250);
     painter.drawLine(312-a,240,312-a,250);
     QString text_Tr = "Tr";
-    if(input_ok_flg==1)
+    if(val_change==0)
     {
         str = QString("Tr=%1").arg(tem_val->chamfer4.Tr);
     }
@@ -5731,7 +5855,14 @@ void widget2::DrawBangLiao()
     painter.drawLine(300,120,300,130);
     painter.drawLine(88,125,300,125);
     //str = QString("L0=%1").arg(barstock_width);
-    str = QString("L0=%1").arg(edit_str[0]);
+    if(val_change==0)
+    {
+        str = QString("L0=%1").arg(barstock_width);
+    }
+    else
+    {
+        str = QString("L0=%1").arg(edit_str[0]);
+    }
     painter.drawText(170,110,str);
 
     painter.drawLine(315,133,325,133);
@@ -5739,7 +5870,14 @@ void widget2::DrawBangLiao()
     painter.drawLine(320,133,320,265);
     QString text_D0 = "D0=80.000";
     //str = QString("D0=%1").arg(barstock_height);
-    str = QString("D0=%1").arg(edit_str[1]);
+    if(val_change==0)
+    {
+        str = QString("D0=%1").arg(barstock_height);
+    }
+    else
+    {
+        str = QString("D0=%1").arg(edit_str[1]);
+    }
     painter.translate(335, 230);            // 第1步：变换旋转中心到所绘制文字左下角
     painter.rotate(-90);                    // 第2步： 旋转一定角度
     painter.drawText(0,0, str);      // 第3步： 绘制文字
@@ -5802,6 +5940,108 @@ void widget2::DateUpdate_slot()
 {
     //pic_ischanged = 1-pic_ischanged;
     clear_str_info();
+    work_pic->Updata_Info_slot();
+    update();
+}
+
+void widget2::Timer_on_slot()
+{
+//    static int i=0;
+
+//    if(i==20)//删掉
+//    {
+//        i=0;
+//        motion_internal->spin_data[0].spind_speed_ctrl++;
+//        motion_status->current_val_axis[0]++;
+//        motion_status->current_val_axis[1]++;
+//        if(motion_internal->spin_data[0].spind_speed_ctrl>1)
+//        {
+//            motion_internal->spin_data[0].spind_speed_ctrl=-1;
+//            motion_status->current_val_axis[0]=-1;
+//            motion_status->current_val_axis[1]=-1;
+//        }
+//    }
+//    i++;
+
+    if(motion_internal->spin_data[0].spind_speed_ctrl==1)//正转
+    {
+        ui->t_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt_on.png);}");
+        ui->t_but2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt2.png);}");
+    }
+    else if(motion_internal->spin_data[0].spind_speed_ctrl==-1)//反转
+    {
+        ui->t_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt.png);}");
+        ui->t_but2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt2_on.png);}");
+    }
+    else if(motion_internal->spin_data[0].spind_speed_ctrl==0)
+    {
+        ui->t_but->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt.png);}");
+        ui->t_but2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt2.png);}");
+    }
+
+    if((plc_shm->y[0]&1)==0)//照明
+    {
+        ui->t_but5->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt5.png);}");
+    }
+    else
+    {
+        ui->t_but5->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt5_on.png);}");
+    }
+
+    if((plc_shm->y[0]&2)==0)//润滑
+    {
+        ui->t_but6->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt6.png);}");
+    }
+    else
+    {
+        ui->t_but6->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt6_on.png);}");
+    }
+
+    if((plc_shm->y[0]&4)==0)//清洗
+    {
+        ui->t_but3->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt3.png);}");
+    }
+    else
+    {
+        ui->t_but3->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt3_on.png);}");
+    }
+
+    switch (motion_status->CurTCode)
+    {
+        case 0:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num0.png);}");
+        break;
+        case 1:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num1.png);}");
+        break;
+        case 2:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num2.png);}");
+        break;
+        case 3:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num3.png);}");
+        break;
+        case 4:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num4.png);}");
+        break;
+        case 5:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num5.png);}");
+        break;
+        case 6:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num6.png);}");
+        break;
+        case 7:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num7.png);}");
+        break;
+        case 8:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num8.png);}");
+        break;
+        case 9:
+        ui->t_but4->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg2_t_bt4_num9.png);}");
+        break;
+        default:
+        break;
+    }
+
     update();
 }
 
@@ -5874,6 +6114,7 @@ void widget2::PaintDirection()
 {
     QPainter painter;
     QPen pen,pen1;
+    int tem_x,tem_z;
     pen.setColor(Qt::white);
     pen1.setColor(QColor(21,246,231));
     pen.setWidth(1); //设置线宽
@@ -5884,7 +6125,24 @@ void widget2::PaintDirection()
     QPolygon t0,t1,t2,t3;
     painter.setBrush(QColor(21,246,231));
 
-    if(cur_dir == Zneg)
+    if(para[MOTION_DIRECTION_X].cur_val.int_val == 0)
+    {
+        tem_x = -1;
+    }
+    else
+    {
+        tem_x = 1;
+    }
+    if(para[MOTION_DIRECTION_Z].cur_val.int_val == 0)
+    {
+        tem_z = -1;
+    }
+    else
+    {
+        tem_z = 1;
+    }
+
+    if(motion_status->current_val_axis[1]*tem_z<0)//Z-
     {
         QPoint p0_1(356,103);//
         QPoint p0_2(370,95);
@@ -5897,7 +6155,7 @@ void widget2::PaintDirection()
         t0<<p0_1<<p0_2<<p0_3<<p0_4<<p0_5<<p0_6<<p0_7<<p0_8;
         painter.drawPolygon(t0);
     }
-    if(cur_dir == Xneg)
+    if(motion_status->current_val_axis[0]*tem_x<0)//X-
     {
         QPoint p1_1(416,78);//
         QPoint p1_2(418,86);
@@ -5910,7 +6168,7 @@ void widget2::PaintDirection()
         t1<<p1_1<<p1_2<<p1_3<<p1_4<<p1_5<<p1_6<<p1_7<<p1_8;
         painter.drawPolygon(t1);
     }
-    if(cur_dir == Zplus)
+    if(motion_status->current_val_axis[1]*tem_z>0)//Z+
     {
         QPoint p2_1(426,105);//
         QPoint p2_2(412,112);
@@ -5923,7 +6181,7 @@ void widget2::PaintDirection()
         t2<<p2_1<<p2_2<<p2_3<<p2_4<<p2_5<<p2_6<<p2_7<<p2_8;
         painter.drawPolygon(t2);
     }
-    if(cur_dir == Xplus)
+    if(motion_status->current_val_axis[0]*tem_x>0)//X+
     {
         QPoint p3_1(366,130);//
         QPoint p3_2(363,122);
@@ -5981,7 +6239,12 @@ void widget2::clear_str_info()
     edit_str[6] = "0";
 }
 
-void widget2::set_bt_sett()//设定按钮坐标
+void widget2::UPdate_scr()
+{
+    update();
+}
+
+void widget2::set_bt_jump()//设定按钮坐标
 {
     int i;
     for (i=0;i<9;i++)
@@ -6017,6 +6280,299 @@ void widget2::set_bt_sett()//设定按钮坐标
         bt_showindex[5]->setGeometry(220,110,50,25);//A
     }
     break;
+    case waiyuan3:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(248,75,50,25);//L
+        bt_showindex[3]->setGeometry(316,113,25,50);//cr
+        bt_showindex[4]->setGeometry(309,287,25,50);//Tr
+        bt_showindex[5]->setGeometry(260,115,50,25);//R
+    }
+    break;
+    case duanmian1:
+    {
+        for (i=0;i<5;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(265,125,25,50);//Lr
+        bt_showindex[3]->setGeometry(206,74,50,25);//cT
+        bt_showindex[4]->setGeometry(216,339,50,25);//Tr
+    }
+    break;
+    case duanmian2:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(212,75,50,25);//W
+        bt_showindex[3]->setGeometry(266,128,25,50);//Lr
+        bt_showindex[4]->setGeometry(178,331,50,25);//TW
+        bt_showindex[5]->setGeometry(213,291,50,25);//TR
+    }
+    break;
+    case duanmian3:
+    {
+        for (i=0;i<5;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(155,55,50,25);//L0
+        //bt_showindex[0]->setGeometry(232,174,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(232,174,50,25);//CT
+        bt_showindex[3]->setGeometry(332,234,25,50);//Lr
+        bt_showindex[4]->setGeometry(250,234,50,25);//△T
+    }
+    break;
+    case likong1:
+    {
+        for (i=0;i<5;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(155,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(203,75,50,25);//L
+        bt_showindex[3]->setGeometry(317,110,25,50);//Cr
+        bt_showindex[4]->setGeometry(313,294,50,25);//Tr
+    }
+    break;
+    case likong2:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(155,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(205,75,50,25);//L
+        bt_showindex[3]->setGeometry(317,110,25,50);//Cr
+        bt_showindex[4]->setGeometry(313,294,25,50);//Tr
+        bt_showindex[5]->setGeometry(255,156,50,25);//A
+    }
+    break;
+    case likong3:
+    {
+        for (i=0;i<7;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(155,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(217,74,50,25);//W
+        bt_showindex[3]->setGeometry(264,74,50,25);//W1
+        bt_showindex[4]->setGeometry(318,111,25,50);//Lr
+        bt_showindex[5]->setGeometry(323,288,50,25);//Tr
+        bt_showindex[6]->setGeometry(333,254,50,25);//Tw
+    }
+    break;
+    case likong4:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(155,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(255,74,50,25);//L
+        bt_showindex[3]->setGeometry(317,131,25,50);//Cr
+        bt_showindex[4]->setGeometry(313,211,25,50);//Tr
+        bt_showindex[5]->setGeometry(276,152,50,25);//R
+    }
+    break;
+    case likong5:
+    {
+        for (i=0;i<5;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(155,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(255,74,50,25);//L
+        bt_showindex[3]->setGeometry(310,174,25,50);//△T
+        bt_showindex[4]->setGeometry(328,242,25,50);//BT
+    }
+    break;
+    case zhuimian1:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(209,74,50,25);//L
+        bt_showindex[3]->setGeometry(334,120,25,50);//Cr
+        bt_showindex[4]->setGeometry(327,304,25,50);//Tr
+        bt_showindex[5]->setGeometry(218,107,50,25);//A
+    }
+    break;
+    case zhuimian2:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(210,74,50,25);//L
+        bt_showindex[3]->setGeometry(96,127,25,50);//Cr
+        bt_showindex[4]->setGeometry(327,298,25,50);//Tr
+        bt_showindex[5]->setGeometry(218,107,50,25);//A
+    }
+    break;
+    case zhuimian3:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(210,74,50,25);//L
+        bt_showindex[3]->setGeometry(332,121,25,50);//Cr
+        bt_showindex[4]->setGeometry(327,251,25,50);//Tr
+        bt_showindex[5]->setGeometry(218,107,50,25);//A
+    }
+    break;
+    case zhuimian4:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(210,74,50,25);//L
+        bt_showindex[3]->setGeometry(96,127,25,50);//Cr
+        bt_showindex[4]->setGeometry(327,298,25,50);//Tr
+        bt_showindex[5]->setGeometry(218,107,50,25);//A
+    }
+    break;
+    case luowen1:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(150,60,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(200,92,50,25);//L
+        bt_showindex[3]->setGeometry(216,112,50,25);//Tp
+        bt_showindex[4]->setGeometry(302,139,25,50);//Cr
+        bt_showindex[5]->setGeometry(312,271,25,50);//Tr
+    }
+    break;
+    case luowen2:
+    {
+        for (i=0;i<7;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(211,73,50,25);//L
+        bt_showindex[3]->setGeometry(218,102,50,25);//Tp
+        bt_showindex[4]->setGeometry(353,197,25,50);//Cr
+        bt_showindex[5]->setGeometry(325,256,25,50);//Tr
+        bt_showindex[6]->setGeometry(202,310,50,25);//A
+    }
+    break;
+    case luowen3:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(211,73,50,25);//L
+        bt_showindex[3]->setGeometry(168,191,50,25);//Tp
+        bt_showindex[4]->setGeometry(319,133,25,50);//Cr
+        bt_showindex[5]->setGeometry(338,235,25,50);//Tr
+    }
+    break;
+    case luowen4:
+    {
+        for (i=0;i<7;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(211,73,50,25);//L
+        bt_showindex[3]->setGeometry(230,177,50,25);//Tp
+        bt_showindex[4]->setGeometry(338,87,25,50);//Cr
+        bt_showindex[5]->setGeometry(335,267,25,50);//Tr
+        bt_showindex[6]->setGeometry(204,231,50,25);//A
+    }
+    break;
+    case daojiao1:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(258,73,50,25);//L
+        bt_showindex[3]->setGeometry(306,100,25,50);//Cr
+        bt_showindex[4]->setGeometry(298,270,25,50);//Tr
+        bt_showindex[5]->setGeometry(258,119,25,50);//R
+    }
+    break;
+    case daojiao2:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(258,73,50,25);//L
+        bt_showindex[3]->setGeometry(306,100,25,50);//Cr
+        bt_showindex[4]->setGeometry(298,270,25,50);//Tr
+        bt_showindex[5]->setGeometry(258,100,25,50);//A
+    }
+    case daojiao3:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(258,73,50,25);//L
+        bt_showindex[3]->setGeometry(306,100,25,50);//Cr
+        bt_showindex[4]->setGeometry(298,270,25,50);//Tr
+        bt_showindex[5]->setGeometry(258,119,25,50);//R
+    }
+    break;
+    case daojiao4:
+    {
+        for (i=0;i<6;i++)
+        {
+            bt_showindex[i]->show();
+        }
+        bt_showindex[0]->setGeometry(165,55,50,25);//L0
+        bt_showindex[1]->setGeometry(50,200,25,50);//D0
+        bt_showindex[2]->setGeometry(258,73,50,25);//L
+        bt_showindex[3]->setGeometry(306,100,25,50);//Cr
+        bt_showindex[4]->setGeometry(298,270,25,50);//Tr
+        bt_showindex[5]->setGeometry(258,119,25,50);//A
+    }
+    break;
     default:
         break;
 
@@ -6033,108 +6589,114 @@ void widget2::paintEvent(QPaintEvent *)
     painter.begin(this);
     painter.drawPixmap(rect(),pixmap,QRect());
     //qDebug()<<"cur_work_mod"<<cur_work_mod;
-    if(barstock_flg==0)
+    //qDebug()<<"input_ok_flg0="<<input_ok_flg;
+    if(bar_pic==0)
     {
-        ui->knife_dir->hide();
-        if(cur_work_mod==waiyuan1)
+        if(barstock_flg==0)
         {
-            DrawWaiYuan1();
+            ui->knife_dir->hide();
+            if(cur_work_mod==waiyuan1)
+            {
+                DrawWaiYuan1();
+            }
+            else if(cur_work_mod==waiyuan2)
+            {
+                DrawWaiYuan2();
+            }
+            else if(cur_work_mod==waiyuan3)
+            {
+                DrawWaiYuan3();
+            }
+            else if(cur_work_mod==duanmian1)
+            {
+                DrawDuanMian1();
+            }
+            else if(cur_work_mod==duanmian2)
+            {
+                DrawDuanMian2();
+            }
+            else if(cur_work_mod==duanmian3)
+            {
+                DrawDuanMian3();
+            }
+            else if(cur_work_mod==likong1)
+            {
+                DrawLiKong1();
+            }
+            else if(cur_work_mod==likong2)
+            {
+                DrawLiKong2();
+            }
+            else if(cur_work_mod==likong3)
+            {
+                DrawLiKong3();
+            }
+            else if(cur_work_mod==likong4)
+            {
+                DrawLiKong4();
+            }
+            else if(cur_work_mod==likong5)
+            {
+                DrawLiKong5();
+            }
+            else if(cur_work_mod==zhuimian1)
+            {
+                DrawWaiYuan2();
+            }
+            else if(cur_work_mod==zhuimian2)
+            {
+                DrawZhuiMian2();
+            }
+            else if(cur_work_mod==zhuimian3)
+            {
+                DrawZhuiMian3();
+            }
+            else if(cur_work_mod==zhuimian4)
+            {
+                DrawZhuiMian4();
+            }
+            else if(cur_work_mod==luowen1)
+            {
+                DrawLuoWen1();
+            }
+            else if(cur_work_mod==luowen2)
+            {
+                DrawLuoWen2();
+            }
+            else if(cur_work_mod==luowen3)
+            {
+                DrawLuoWen3();
+            }
+            else if(cur_work_mod==luowen4)
+            {
+                DrawLuoWen4();
+            }
+            else if(cur_work_mod==daojiao1)
+            {
+                DrawDaoJiao1();
+            }
+            else if(cur_work_mod==daojiao2)
+            {
+                DrawDaoJiao2();
+            }
+            else if(cur_work_mod==daojiao3)
+            {
+                DrawDaoJiao3();
+            }
+            else if(cur_work_mod==daojiao4)
+            {
+                DrawDaoJiao4();
+            }
+
         }
-        else if(cur_work_mod==waiyuan2)
+        else
         {
-            DrawWaiYuan2();
+            ui->knife_dir->show();
+            DrawBangLiao();
         }
-        else if(cur_work_mod==waiyuan3)
-        {
-            DrawWaiYuan3();
-        }
-        else if(cur_work_mod==duanmian1)
-        {
-            DrawDuanMian1();
-        }
-        else if(cur_work_mod==duanmian2)
-        {
-            DrawDuanMian2();
-        }
-        else if(cur_work_mod==duanmian3)
-        {
-            DrawDuanMian3();
-        }
-        else if(cur_work_mod==likong1)
-        {
-            DrawLiKong1();
-        }
-        else if(cur_work_mod==likong2)
-        {
-            DrawLiKong2();
-        }
-        else if(cur_work_mod==likong3)
-        {
-            DrawLiKong3();
-        }
-        else if(cur_work_mod==likong4)
-        {
-            DrawLiKong4();
-        }
-        else if(cur_work_mod==likong5)
-        {
-            DrawLiKong5();
-        }
-        else if(cur_work_mod==zhuimian1)
-        {
-            DrawWaiYuan2();
-        }
-        else if(cur_work_mod==zhuimian2)
-        {
-            DrawZhuiMian2();
-        }
-        else if(cur_work_mod==zhuimian3)
-        {
-            DrawZhuiMian3();
-        }
-        else if(cur_work_mod==zhuimian4)
-        {
-            DrawZhuiMian4();
-        }
-        else if(cur_work_mod==luowen1)
-        {
-            DrawLuoWen1();
-        }
-        else if(cur_work_mod==luowen2)
-        {
-            DrawLuoWen2();
-        }
-        else if(cur_work_mod==luowen3)
-        {
-            DrawLuoWen3();
-        }
-        else if(cur_work_mod==luowen4)
-        {
-            DrawLuoWen4();
-        }
-        else if(cur_work_mod==daojiao1)
-        {
-            DrawDaoJiao1();
-        }
-        else if(cur_work_mod==daojiao2)
-        {
-            DrawDaoJiao2();
-        }
-        else if(cur_work_mod==daojiao3)
-        {
-            DrawDaoJiao3();
-        }
-        else if(cur_work_mod==daojiao4)
-        {
-            DrawDaoJiao4();
-        }
-    }
-    else
-    {
-        ui->knife_dir->show();
-        DrawBangLiao();
     }
     DrawDirection();
     painter.end();
+
     //update();
 }

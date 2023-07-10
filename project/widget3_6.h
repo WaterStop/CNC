@@ -34,6 +34,7 @@ private:
     void ClearEdit();
     void change_axisdir_icon();
     widget3_15* widget15;
+    QLabel *lab_unit[5];
 public slots:
     void widget3_6_editDataToGCode();
 private slots:
@@ -47,6 +48,7 @@ private slots:
     void luowen_fixval_slot();
     void show_unit_slot(int num);
     void edit_input_slot(QString str);
+    void updateTrCnCr();
 signals:
     void edit_press_signal();
     void input_ok_signal();

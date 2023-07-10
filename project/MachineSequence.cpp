@@ -24,6 +24,7 @@ bool MachineSequene::setbar(int barWidth, int barHeight)
 
 bool MachineSequene::addNode( s_outerCircleMode1 outerCircle1)
 {
+    qDebug() <<"00:" <<outerCircle1.Cn<<endl;
     machineNode *p = index.tail;
     machineNode *cur = new machineNode();
     memset(cur, 0, sizeof(machineNode));// 清空新结点的内存，防止错误
@@ -493,7 +494,7 @@ bool MachineSequene::addNode(s_chamferMode4 chamfer4)
 machineNode * MachineSequene::findNode(int n)
 {
     // 参数健壮性检查
-    if(n < 1 || n > index.num)
+    if(n < 0 || n > index.num)
         return nullptr;
 
     machineNode *p = index.head;
@@ -507,21 +508,27 @@ machineNode * MachineSequene::findNode(int n)
 
 bool MachineSequene::deleteNode(int n)
 {
-
     // 所要查询结点的前一个结点指针
     machineNode *prior = findNode(n-1);
     // 不合理的情况
+    qDebug()<<"情况0.1";
     if(index.num == 0)
+    {
+        qDebug()<<"情况0.2";
         return false;
+    }
     // 只有一个结点的情况
     else if(index.num == 1 && n == 1){
+        qDebug()<<"情况1";
         index.tail = index.head;
         delete(prior->next);
     // 是最后一个结点的情况
     }else if(n == index.num){
+        qDebug()<<"情况2";
         index.tail = prior;
         delete(prior->next);
         prior->next = nullptr;
+
     // 中间结点的情况
     }else{
         machineNode *p = prior->next;
@@ -530,6 +537,7 @@ bool MachineSequene::deleteNode(int n)
     }
 
     --index.num;
+    qDebug()<<"num2="<<index.num;
     return true;
 }
 

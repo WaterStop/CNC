@@ -12,12 +12,10 @@ widget3::widget3(QWidget *parent) :
 {
     ui->setupUi(this);
     //set_wg3_background();
-    set_wg3_edit_pos();
-    set_wg3_label_pos();
-    DisLabel_title();
-    DealSlot();
+    info_init();
+
+
     connect(ui->horizontalSlider,SIGNAL(valueChanged(int)),this,SLOT(setpoint(int)));//调整用
-    UpdataTimer();
     ui->horizontalSlider->hide();//调整用
 
 }
@@ -48,17 +46,89 @@ void widget3::resizeEvent(QResizeEvent *event)//背景随控件大小变化
     this->setPalette(palette);
 }
 
+void widget3::info_init()
+{
+    int i;
+    set_wg3_edit_pos();
+    set_wg3_label_pos();
+
+    set_button();
+    QFont font("Microsoft YaHei", 6, 75, false);
+
+    for (i=0;i<3;i++)
+    {
+        lab_pro[i] = new QLabel(ui->frame);
+        lab_pro[i]->setFont(weiruanyahei4);
+        lab_pro[i]->setAlignment(Qt::AlignCenter);
+        lab_pro[i]->setStyleSheet("color: rgb(255, 255, 255);");
+    }
+    lab_pro[0]->setGeometry(186,65,100,30);
+    lab_pro[1]->setGeometry(186,115,100,30);
+    lab_pro[2]->setGeometry(186,165,100,30);
+    for (i=0;i<5;i++)
+    {
+        lab_val[i] = new QLabel(ui->frame);
+        lab_val[i]->setFont(font);
+        lab_val[i]->setAlignment(Qt::AlignRight);
+        lab_val[i]->setStyleSheet("color: rgb(255, 255, 255);");
+    }
+        lab_val[0]->setGeometry(22,35,95,23);
+        lab_val[1]->setGeometry(42,90,95,23);
+        lab_val[2]->setGeometry(42,145,95,23);
+        lab_val[3]->setGeometry(42,195,95,23);
+        lab_val[4]->setGeometry(15,240,95,23);
+
+   for (i=0;i<2;i++)
+   {
+       lab_dir[i] = new QLabel(ui->frame);
+       lab_dir[i]->setGeometry(45+i*140,305,20,20);
+   }
+
+    DisLabel_title();
+    DealSlot();
+
+}
+
 void widget3::set_wg3_edit_pos()
 {
     //ui->edit_0->setStyleSheet("color: rgb(255, 255, 255);border-style:outset;background:transparent;");
     //ui->edit_1->setStyleSheet("background: rgb(64, 86, 129);color: rgb(255, 255, 255);border-width:0;border-style:outset;background:transparent;");
-    set_edit_style();
-    ui->edit_0->setFont(weiruanyahei6);
-    ui->edit_1->setFont(weiruanyahei6);
-    ui->edit_2->setFont(weiruanyahei6);
-    ui->edit_3->setFont(weiruanyahei6);
-    ui->edit_4->setFont(weiruanyahei6);
-    ui->edit_5->setFont(weiruanyahei6);
+    set_edit_style_slot();
+    ui->edit_0->setFont(weiruanyahei4);
+    ui->edit_1->setFont(weiruanyahei4);
+    ui->edit_2->setFont(weiruanyahei4);
+    ui->edit_3->setFont(weiruanyahei4);
+    ui->edit_4->setFont(weiruanyahei4);
+    ui->edit_5->setFont(weiruanyahei4);
+
+    ui->edit_0->hide();
+    ui->edit_1->hide();
+    ui->edit_2->hide();
+    ui->edit_3->hide();
+    ui->edit_4->hide();
+    ui->edit_5->hide();
+
+    edit_L0 = new MyLineEdit(ui->frame);
+    edit_D0 = new MyLineEdit(ui->frame);
+    edit_L1 = new MyLineEdit(ui->frame);
+    edit_D1 = new MyLineEdit(ui->frame);
+    edit_L0->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color:white;");
+    edit_D0->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color:white;");
+    edit_L1->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color:white;");
+    edit_D1->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color:white;");
+
+    ui->edit_0->setFocusPolicy(Qt::NoFocus);
+    ui->edit_1->setFocusPolicy(Qt::NoFocus);
+    ui->edit_2->setFocusPolicy(Qt::NoFocus);
+    ui->edit_3->setFocusPolicy(Qt::NoFocus);
+    ui->edit_4->setFocusPolicy(Qt::NoFocus);
+    ui->edit_5->setFocusPolicy(Qt::NoFocus);
+//    ui->edit_0->setStyleSheet("color: rgb(255, 255, 255);");
+//    ui->edit_1->setStyleSheet("color: rgb(255, 255, 255);");
+//    ui->edit_2->setStyleSheet("color: rgb(255, 255, 255);");
+//    ui->edit_3->setStyleSheet("color: rgb(255, 255, 255);");
+//    ui->edit_4->setStyleSheet("color: rgb(255, 255, 255);");
+//    ui->edit_5->setStyleSheet("color: rgb(255, 255, 255);");
     if(scr_size==0)
     {
         ui->edit_0->setGeometry(20,300,85,20);
@@ -77,6 +147,46 @@ void widget3::set_wg3_edit_pos()
         ui->edit_3->setGeometry(190,305,87,23);
         ui->edit_4->setGeometry(190,335,87,23);
         ui->edit_5->setGeometry(190,365,87,23);
+    }
+
+    edit_L0->setGeometry(48,305,87,23);
+    edit_D0->setGeometry(48,335,87,23);
+    edit_L1->setGeometry(190,305,87,23);
+    edit_D1->setGeometry(190,335,87,23);
+    edit_L0->setFont(weiruanyahei4);
+    edit_D0->setFont(weiruanyahei4);
+    edit_L1->setFont(weiruanyahei4);
+    edit_D1->setFont(weiruanyahei4);
+    edit_L0->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    edit_D0->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    edit_L1->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    edit_D1->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+}
+
+void widget3::loadWorkInfo(int index)
+{
+    machineNode *tem_val;
+    tem_val = dealInterfaceData->findNode(index);
+    QString str;
+
+    if(cur_work_mod==bangliao)
+    {
+        str = QString("%1").arg(barstock_width);
+        //ui->edit_0->setText(str);
+        edit_L0->setText(str);
+        str = QString("%1").arg(barstock_height);
+        //ui->edit_1->setText(str);
+        edit_D0->setText(str);
+        str = QString("%1").arg("");
+        ui->edit_2->setText(str);
+        str = QString("%1").arg(barstock_L1);
+       // ui->edit_3->setText(str);
+        edit_L1->setText(str);
+        str = QString("%1").arg(barstock_D1);
+        //ui->edit_4->setText(str);
+        edit_L1->setText(str);
+        str = QString("%1").arg("");
+        ui->edit_5->setText(str);
     }
 }
 
@@ -112,6 +222,12 @@ void widget3::set_wg3_label_pos()
         ui->pos_z1->setGeometry(75,195,95,23);
         ui->speed->setGeometry(75,240,95,23);
         label_request_speed->setGeometry(75,230,95,23);
+        label_request_speed->hide();
+//        lab_val[0]->setGeometry(55,35,95,23);
+//        lab_val[1]->setGeometry(55,90,95,23);
+//        lab_val[2]->setGeometry(55,145,95,23);
+//        lab_val[3]->setGeometry(55,195,95,23);
+//        lab_val[4]->setGeometry(55,240,95,23);
 
         ui->label_0->setGeometry(12,300,30,30);
         ui->label_1->setGeometry(12,330,30,30);
@@ -150,20 +266,43 @@ void widget3::set_wg3_label_point(int angle)
     matrix.rotate(angle);
 }
 
+void widget3::set_button()
+{
+    int i;
+    for (i=0;i<3;i++)
+    {
+        axis_zero[i] = new QPushButton(ui->frame);
+        axis_zero[i]->setGeometry(18,80+i*55,40,40);
+        axis_zero[i]->setStyleSheet("background:transparent;");
+        axis_zero[i]->setFocusPolicy(Qt::NoFocus);//无焦点设置
+    }
+}
+
 void widget3::DealSlot()
 {
-    connect(ui->edit_0, SIGNAL(clicked()), this, SLOT(show_keyboard_slot()));
-    connect(ui->edit_1, SIGNAL(clicked()), this, SLOT(show_keyboard_slot1()));
-    connect(ui->edit_2, SIGNAL(clicked()), this, SLOT(show_keyboard_slot2()));
-    connect(ui->edit_3, SIGNAL(clicked()), this, SLOT(show_keyboard_slot3()));
-    connect(ui->edit_4, SIGNAL(clicked()), this, SLOT(show_keyboard_slot4()));
-    connect(ui->edit_5, SIGNAL(clicked()), this, SLOT(show_keyboard_slot5()));
-    connect(ui->edit_0, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
-    connect(ui->edit_1, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
-    connect(ui->edit_2, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
-    connect(ui->edit_3, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
-    connect(ui->edit_4, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
-    connect(ui->edit_5, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+    int i;
+//    connect(ui->edit_0, SIGNAL(clicked()), this, SLOT(show_keyboard_slot()));
+//    connect(ui->edit_1, SIGNAL(clicked()), this, SLOT(show_keyboard_slot1()));
+//    connect(ui->edit_2, SIGNAL(clicked()), this, SLOT(show_keyboard_slot2()));
+//    connect(ui->edit_3, SIGNAL(clicked()), this, SLOT(show_keyboard_slot3()));
+//    connect(ui->edit_4, SIGNAL(clicked()), this, SLOT(show_keyboard_slot4()));
+//    connect(ui->edit_5, SIGNAL(clicked()), this, SLOT(show_keyboard_slot5()));
+//    connect(ui->edit_0, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+//    connect(ui->edit_1, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+//    connect(ui->edit_2, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+//    connect(ui->edit_3, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+//    connect(ui->edit_4, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+//    connect(ui->edit_5, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+    connect(axis_zero[0], SIGNAL(released()), this, SLOT(return_zero_slot_X()));
+    connect(axis_zero[1], SIGNAL(released()), this, SLOT(return_zero_slot_Z()));
+    connect(edit_L0, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+    connect(edit_D0, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+    connect(edit_L1, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+    connect(edit_D1, SIGNAL(textChanged(QString)), this, SLOT(edit_input_slot(QString)));
+    connect(edit_L0, SIGNAL(clicked()), this, SLOT(show_keyboard_slot()));
+    connect(edit_D0, SIGNAL(clicked()), this, SLOT(show_keyboard_slot1()));
+    connect(edit_L1, SIGNAL(clicked()), this, SLOT(show_keyboard_slot3()));
+    connect(edit_D1, SIGNAL(clicked()), this, SLOT(show_keyboard_slot4()));
 }
 
 void widget3::show_keyboard_slot()
@@ -247,6 +386,33 @@ void widget3::edit_input_slot(QString str)
     {
         emit edit_input_signal(6,str);
     }
+
+    if(edit_L0->hasFocus())
+    {
+        emit edit_input_signal(1,str);
+    }
+    else if(edit_D0->hasFocus())
+    {
+        emit edit_input_signal(2,str);
+    }
+    else if(edit_L1->hasFocus())
+    {
+        emit edit_input_signal(4,str);
+    }
+    else if(edit_D1->hasFocus())
+    {
+        emit edit_input_signal(5,str);
+    }
+}
+
+void widget3::return_zero_slot_X()//回零
+{
+    gui_ctl->request_mac_home[0]=1;
+}
+
+void widget3::return_zero_slot_Z()//回零
+{
+    gui_ctl->request_mac_home[1]=1;
 }
 
 void widget3::deal_enter_slot()
@@ -255,9 +421,13 @@ void widget3::deal_enter_slot()
     tem_val = dealInterfaceData->findNode(cur_Node);
     if(barstock_flg==1)
     {
-        qDebug()<<"棒料设置";
-        barstock_width = ui->edit_0->text().toDouble();//设置棒料长
-        barstock_height = ui->edit_1->text().toDouble();//设置棒料宽
+//        barstock_width = ui->edit_0->text().toDouble();//设置棒料长
+//        barstock_height = ui->edit_1->text().toDouble();//设置棒料宽
+        barstock_width = edit_L0->text().toInt();//设置棒料长
+        barstock_height = edit_D0->text().toInt();//设置棒料宽
+        barstock_L1 = edit_L1->text().toInt();//设置起刀点z
+        barstock_D1 = edit_D1->text().toInt();//设置起刀点x
+        qDebug()<<"barstock_width="<<barstock_width;
         barstock_set_signal();
         emit close_keyboard_signal();
         return;
@@ -877,23 +1047,22 @@ void widget3::paintEvent(QPaintEvent *event)
     painter.drawPixmap(rect(),pixmap,QRect());
 
     deal_point();
-    set_edit_style();
 
     painter.end();
 }
 
-void widget3::set_edit_style()
+void widget3::set_edit_style_slot()
 {
-    if(is_work==0)
-    {
-        ui->edit_0->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
-        ui->edit_1->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
-        ui->edit_2->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
-        ui->edit_3->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
-        ui->edit_4->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
-        ui->edit_5->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
-    }
-    else
+//    if(is_work==0)
+//    {
+//        ui->edit_0->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
+//        ui->edit_1->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
+//        ui->edit_2->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
+//        ui->edit_3->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
+//        ui->edit_4->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
+//        ui->edit_5->setStyleSheet("border-image:url(:/new/blue_pic/edit_bk.png);color: rgb(255, 255, 255);");
+//    }
+//    else
     {
         ui->edit_0->setStyleSheet("color: rgb(255, 255, 255);border-style:outset;background:transparent;");
         ui->edit_1->setStyleSheet("color: rgb(255, 255, 255);border-style:outset;background:transparent;");
@@ -932,7 +1101,9 @@ void widget3::deal_point()
         length =30;
         weigth = 20;
     }
-
+//    motion_status->spind_to_st[0]=3;
+//    motion_status->axis_to_st[0] =1;
+//    motion_status->axis_to_st[1] =2;
     //--------------------
     QPainter painter1(this);
     painter1.setRenderHint(QPainter::SmoothPixmapTransform, true); //平滑像素图，防止图形走样
@@ -940,7 +1111,7 @@ void widget3::deal_point()
     // 设定旋转中心点
     painter1.translate(x1,y1);
     // 旋转的角度
-    painter1.rotate(cur_angle);
+    painter1.rotate(qAbs(motion_status->tor_ref[motion_status->spind_to_st[0]])*180/100);//主轴
     // 恢复中心点
     painter1.translate(-x1,-y1);
     // 画图操作
@@ -953,11 +1124,12 @@ void widget3::deal_point()
     // 设定旋转中心点
     painter2.translate(x2,y2);
     // 旋转的角度
-    painter2.rotate(cur_angle);
+    painter2.rotate(qAbs(motion_status->tor_ref[motion_status->axis_to_st[0]])*180/100);//X轴
     // 恢复中心点
     painter2.translate(-x2,-y2);
     // 画图操作
     painter2.drawPixmap(x2-(length/3)*2,y2-weigth/2,length,weigth, disc2);
+
 
     //-------------------
     QPainter painter3(this);
@@ -966,7 +1138,7 @@ void widget3::deal_point()
     // 设定旋转中心点
     painter3.translate(x3,y3);
     // 旋转的角度
-    painter3.rotate(cur_angle);
+    painter3.rotate(qAbs(motion_status->tor_ref[motion_status->axis_to_st[1]])*180/100);//Z轴
     // 恢复中心点
     painter3.translate(-x3,-y3);
     // 画图操作
@@ -984,19 +1156,35 @@ void widget3::setpoint(int value)
     {
         is_work = 0;
     }
-    update();
+    set_edit_style_slot();
+    //update();
 }
 
 void widget3::Info_dis()
 {
     QString str;
+    int X_dir,Z_dir;
     machineNode *tem_val;
-    tem_val = dealInterfaceData->findNode(dealInterfaceData->m_mSeq.index.num);
-    ui->edit_0->setFocus();
-    ui->edit_0->selectAll();
-    qDebug()<<"Info_dis--cur_work_mod="<<cur_work_mod;
+    //tem_val = dealInterfaceData->findNode(dealInterfaceData->m_mSeq.index.num);
+    tem_val = dealInterfaceData->findNode(cur_Node);
+    //ui->edit_0->setFocus();
+    //ui->edit_0->selectAll();
     switch (cur_work_mod)
     {
+        case bangliao:
+        str = QString("%1").arg(barstock_width);
+        //ui->edit_0->setText(str);
+        edit_L0->setText(str);
+        str = QString("%1").arg(barstock_height);
+        ui->edit_1->setText(str);
+        edit_D0->setText(str);
+        str = QString("%1").arg(barstock_L1);
+        ui->edit_3->setText(str);
+        edit_L1->setText(str);
+        str = QString("%1").arg(barstock_D1);
+        ui->edit_4->setText(str);
+        edit_D1->setText(str);
+        break;
         case waiyuan1:
         str = QString("%1").arg(tem_val->outerCircle1.L);
         ui->edit_0->setText(str);
@@ -1008,6 +1196,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->outerCircle1.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->outerCircle1.xDir;
+        Z_dir = tem_val->outerCircle1.zDir;
         break;
         case waiyuan2:
         str = QString("%1").arg(tem_val->outerCircle2.L);
@@ -1022,6 +1212,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->outerCircle2.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->outerCircle2.xDir;
+        Z_dir = tem_val->outerCircle2.zDir;
         break;
         case waiyuan3:
         str = QString("%1").arg(tem_val->outerCircle3.L);
@@ -1036,6 +1228,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->outerCircle3.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->outerCircle3.xDir;
+        Z_dir = tem_val->outerCircle3.zDir;
         break;
         case duanmian1:
         str = QString("%1").arg(tem_val->endFace1.Lr);
@@ -1048,6 +1242,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->endFace1.CT);
         ui->edit_5->setText(str);
+        X_dir = tem_val->endFace1.xDir;
+        Z_dir = tem_val->endFace1.zDir;
         break;
         case duanmian2:
         str = QString("%1").arg(tem_val->endFace2.Lr);
@@ -1062,6 +1258,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->endFace2.W);
         ui->edit_5->setText(str);
+        X_dir = tem_val->endFace2.xDir;
+        Z_dir = tem_val->endFace2.zDir;
         break;
         case duanmian3:
         str = QString("%1").arg(tem_val->endFace3.Lr);
@@ -1074,6 +1272,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->endFace3.CT);
         ui->edit_5->setText(str);
+        X_dir = tem_val->endFace3.xDir;
+        Z_dir = tem_val->endFace3.zDir;
         break;
         case likong1:
         str = QString("%1").arg(tem_val->innerHole1.L);
@@ -1086,6 +1286,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->innerHole1.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->innerHole1.xDir;
+        Z_dir = tem_val->innerHole1.zDir;
         break;
         case likong2:
         str = QString("%1").arg(tem_val->innerHole2.L);
@@ -1100,6 +1302,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->innerHole2.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->innerHole2.xDir;
+        Z_dir = tem_val->innerHole2.zDir;
         break;
         case likong3:
         str = QString("%1").arg(tem_val->innerHole3.Lr);
@@ -1114,6 +1318,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->innerHole3.Tw);
         ui->edit_5->setText(str);
+        X_dir = tem_val->innerHole3.xDir;
+        Z_dir = tem_val->innerHole3.zDir;
         break;
         case likong4:
         str = QString("%1").arg(tem_val->innerHole4.L);
@@ -1128,6 +1334,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->innerHole4.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->innerHole4.xDir;
+        Z_dir = tem_val->innerHole4.zDir;
         break;
         case likong5:
         str = QString("%1").arg(tem_val->innerHole5.L);
@@ -1140,6 +1348,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->innerHole5.BT);
         ui->edit_5->setText(str);
+        X_dir = tem_val->innerHole5.xDir;
+        Z_dir = tem_val->innerHole5.zDir;
         break;
         case zhuimian1:
         str = QString("%1").arg(tem_val->coneFace1.L);
@@ -1154,6 +1364,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->coneFace1.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->coneFace1.xDir;
+        Z_dir = tem_val->coneFace1.zDir;
         break;
         case zhuimian2:
         str = QString("%1").arg(tem_val->coneFace2.L);
@@ -1168,6 +1380,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->coneFace2.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->coneFace2.xDir;
+        Z_dir = tem_val->coneFace2.zDir;
         break;
         case zhuimian3:
         str = QString("%1").arg(tem_val->coneFace3.L);
@@ -1182,6 +1396,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->coneFace3.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->coneFace3.xDir;
+        Z_dir = tem_val->coneFace3.zDir;
         break;
         case zhuimian4:
         str = QString("%1").arg(tem_val->coneFace4.L);
@@ -1196,6 +1412,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->coneFace4.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->coneFace4.xDir;
+        Z_dir = tem_val->coneFace4.zDir;
         break;
         case luowen1:
         str = QString("%1").arg(tem_val->screwThread1.L);
@@ -1210,6 +1428,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->screwThread1.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->screwThread1.xDir;
+        Z_dir = tem_val->screwThread1.zDir;
         break;
         case luowen2:
         str = QString("%1").arg(tem_val->screwThread2.L);
@@ -1224,6 +1444,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->screwThread2.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->screwThread2.xDir;
+        Z_dir = tem_val->screwThread2.zDir;
         break;
         case luowen3:
         str = QString("%1").arg(tem_val->screwThread3.L);
@@ -1238,6 +1460,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->screwThread3.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->screwThread3.xDir;
+        Z_dir = tem_val->screwThread3.zDir;
         break;
         case luowen4:
         str = QString("%1").arg(tem_val->screwThread4.L);
@@ -1252,6 +1476,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->screwThread4.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->screwThread4.xDir;
+        Z_dir = tem_val->screwThread4.zDir;
         break;
         case daojiao1:
         str = QString("%1").arg(tem_val->chamfer1.R);
@@ -1264,6 +1490,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->chamfer1.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->chamfer1.xDir;
+        Z_dir = tem_val->chamfer1.zDir;
         break;
         case daojiao2:
         str = QString("%1").arg(tem_val->chamfer2.A);
@@ -1276,6 +1504,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->chamfer2.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->chamfer2.xDir;
+        Z_dir = tem_val->chamfer2.zDir;
         break;
         case daojiao3:
         str = QString("%1").arg(tem_val->chamfer3.R);
@@ -1288,6 +1518,8 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->chamfer3.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->chamfer3.xDir;
+        Z_dir = tem_val->chamfer3.zDir;
         break;
         case daojiao4:
         str = QString("%1").arg(tem_val->chamfer4.A);
@@ -1300,19 +1532,71 @@ void widget3::Info_dis()
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->chamfer4.Cr);
         ui->edit_5->setText(str);
+        X_dir = tem_val->chamfer4.xDir;
+        Z_dir = tem_val->chamfer4.zDir;
         break;
         default:
         break;
     }
+    if(X_dir==-1)
+    {
+        lab_dir[1]->setStyleSheet("border-image:url(:/new/blue_pic/wg3_edit_up.png);");
+    }
+    else if(X_dir==1)
+    {
+        lab_dir[1]->setStyleSheet("border-image:url(:/new/blue_pic/wg3_edit_down.png);");
+    }
+    if(Z_dir==-1)
+    {
+        lab_dir[0]->setStyleSheet("border-image:url(:/new/blue_pic/wg3_edit_left.png);");
+    }
+    else if(Z_dir==1)
+    {
+        lab_dir[0]->setStyleSheet("border-image:url(:/new/blue_pic/wg3_edit_right.png);");
+    }
+    //qDebug()<<"X_dir="<<X_dir<<"Z_dir"<<Z_dir;
 }
 
 void widget3::DisLabel_title()
 {
     if(barstock_flg==0)
     {
+        ui->edit_0->show();
+        ui->edit_1->show();
+        ui->edit_2->show();
+        ui->edit_3->show();
+        ui->edit_4->show();
         ui->edit_5->show();
+        edit_L0->hide();
+        edit_D0->hide();
+        edit_L1->hide();
+        edit_D1->hide();
+        for (int i=0;i<2;i++)
+        {
+            lab_dir[i]->show();
+        }
         switch (cur_work_mod)
         {
+            case bangliao:
+            ui->edit_0->hide();
+            ui->edit_1->hide();
+            ui->edit_2->hide();
+            ui->edit_3->hide();
+            ui->edit_4->hide();
+            ui->edit_5->hide();            
+            edit_L0->show();
+            edit_D0->show();
+            edit_L1->show();
+            edit_D1->show();
+            lab_dir[0]->show();
+            lab_dir[1]->show();
+            ui->label_0->setText("L0");
+            ui->label_1->setText("D0");
+            ui->label_2->setText("");
+            ui->label_3->setText("L1");
+            ui->label_4->setText("D1");
+            ui->label_5->setText("");
+            break;
             case waiyuan1:
             ui->edit_1->show();
             ui->edit_2->hide();
@@ -1549,9 +1833,18 @@ void widget3::DisLabel_title()
     }
     else
     {
-        ui->edit_1->show();
+        ui->edit_0->hide();
+        ui->edit_1->hide();
         ui->edit_2->hide();
+        ui->edit_3->hide();
+        ui->edit_4->hide();
         ui->edit_5->hide();
+        edit_L0->show();
+        edit_D0->show();
+        edit_L1->show();
+        edit_D1->show();
+        lab_dir[0]->hide();
+        lab_dir[1]->hide();
         ui->label_0->setText("L0");
         ui->label_1->setText("D0");
         ui->label_2->setText("");
@@ -1559,43 +1852,63 @@ void widget3::DisLabel_title()
         ui->label_4->setText("D1");
         ui->label_5->setText("");
     }
+
 }
 
 void widget3::UpdataTimer()
 {
-    timer = new QTimer();//添加定时器
+    //timer = new QTimer();//添加定时器
     //timer->setInterval(200);
-    connect(timer, SIGNAL(timeout()), this, SLOT(Timer_on_slot()));
-    timer->start(20);
+    //connect(timer, SIGNAL(timeout()), this, SLOT(Timer_on_slot()));
+    //timer->start(20);
 
 }
 
 void widget3::Timer_on_slot()
 {
     QString str;
-    str = QString("%1r/min").arg(motion_internal->spin_data[0].spind_speed_set);//主轴速度
-    ui->zhuzhou->setText(str);
-    str = QString("%1%").arg(QString::number(motion_internal->spin_data[0].spindle_scale*100).toInt());//主轴倍率
-    label_zhuzhou_per->setText(str);
+    int tmp;
+    str = QString("%1").arg(motion_internal->spin_data[0].CncViewSSpeed);//主轴速度
+    ui->zhuzhou->setText("rpm/min");
+    lab_val[0]->setText(str);
+    //tmp_int = motion_internal->spin_data[0].spindle_scale*100;
+    //str = QString("%1%").arg(QString::number(motion_internal->spin_data[0].spindle_scale*100).toInt());//主轴倍率
+    //str = QString("%1%").arg(tmp_int);//主轴倍率
+    //label_zhuzhou_per->setText(str);
+
     if(RadiusPrg==0)
     {
-        str = QString("%1mm").arg(QString::number(motion_internal->current_pos[0]*2,'f',3));//X轴位置
-        ui->pos_x0->setText(str);
+        str = QString("%1").arg(QString::number(motion_internal->current_pos[0]*2,'f',3));//X轴位置
+        ui->pos_x0->setText("mm");
+        lab_val[1]->setText(str);
     }
     else
     {
-        str = QString("%1mm").arg(QString::number(motion_internal->current_pos[0],'f',3));//X轴位置
-        ui->pos_x0->setText(str);
+        str = QString("%1").arg(QString::number(motion_internal->current_pos[0],'f',3));//X轴位置
+        ui->pos_x0->setText("mm");
+        lab_val[1]->setText(str);
     }
-    str = QString("%1mm").arg(QString::number(motion_internal->current_pos[1],'f',3));
-    ui->pos_z0->setText(str);
-    str = QString("%1mm").arg(0);
-    ui->pos_z1->setText(str);
-    str = QString("%1mm/min").arg(QString::number(motion_status->current_vel).toInt());//实时速度
-    ui->speed->setText(str);
-    str = QString("%1mm/min").arg(QString::number(motion_status->requested_vel).toInt());//设定速度
-    label_request_speed->setText(str);
-    str = QString("%1%").arg(QString::number(motion_status->feed_scale*100).toInt());//进给速率
-    label_feed_per->setText(str);
+    str = QString("%1").arg(QString::number(motion_internal->current_pos[1],'f',3));
+    ui->pos_z0->setText("mm");
+    lab_val[2]->setText(str);
+    str = QString("%1").arg(0);
+    ui->pos_z1->setText("mm");
+    lab_val[3]->setText(str);
+    tmp = motion_status->current_val_axis_compound;//实时速度
+    str = QString("%1").arg(QString::number(tmp));
+    ui->speed->setText("mm/min");
+    lab_val[4]->setText(str);
+//    str = QString("%1mm/min").arg(QString::number(motion_status->requested_vel).toInt());//设定速度
+//    label_request_speed->setText(str);
+//    str = QString("%1%").arg(QString::number(motion_status->feed_scale*100).toInt());//进给速率
+//    label_feed_per->setText(str);
+
+    str = QString("%1%").arg(qAbs(motion_status->tor_ref[motion_status->spind_to_st[0]]));
+    lab_pro[0]->setText(str);
+    str = QString("%1%").arg(qAbs(motion_status->tor_ref[motion_status->axis_to_st[0]]));
+    lab_pro[1]->setText(str);
+    str = QString("%1%").arg(qAbs(motion_status->tor_ref[motion_status->axis_to_st[1]]));
+    lab_pro[2]->setText(str);
+    update();
 }
 

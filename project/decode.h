@@ -15,7 +15,7 @@ extern struct decode_status_s * decode_status;
 #define  MaxNestingNum 5
 
 
-#define NAMELEN 20//文件名最大字符数量
+#define NAMELEN 200//文件名最大字符数量
 
 
 #define GCOUNT 17 /*G指令组数*/
@@ -572,13 +572,6 @@ struct parse_s
 struct decode_status_s
 {
     /*
-    报警标志位,在任务的开始判断报警队列长度设置该值
-    1；报警
-    0：未报警
-    */
-    int alarm;
-
-    /*
     需要软件复位标志位
     1-需要复位
     0-不需要
@@ -588,13 +581,6 @@ struct decode_status_s
     int need_soft_rst_flg;
 
 
-    /*
-    PLC是否执行完成了MST信号
-    词法分析遇到MST时置0，
-    根据PLC的MST完成G信号的上升沿置1，
-    词法分析中，会判断此位，如果此位是0，表示MST还未执行完成，需要等待MST执行完成后才能继续词法分析
-    */
-    int MST_done;
 
 
     /*
@@ -652,7 +638,7 @@ struct decode_status_s
     -------------------------------------------NC程序相关，END
     */
 
-    // 宏变量-------存放插补后的数据
+    // 宏变量-------存放插补后的数据和#变量
     double GlobMacroBuf[MACRO_NUM];  
     /*
     刀补值，实时值，可以在界面修改，修改后立即更新此值
@@ -932,7 +918,7 @@ struct CNC_CodeSegMent
     
     int         ThreadHeadNum;//螺纹切削
     int            ScrewFlag;    
-    double      ScrewLead;
+    double      ScrewLead;//螺纹导程
     double      toothNo;    
     double         ScrewTailJ;  // 螺纹短轴退尾
     double         ScrewTailK; // 螺纹长轴退尾

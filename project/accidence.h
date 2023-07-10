@@ -38,7 +38,7 @@ extern int accidence_q_is_empty(void) ;
 extern void CNCWarning(int no);
 extern int check_MST_done_flag(void);
 extern int check_move_mode_queue_empty(void);
-extern int is_start_flag(void);
+extern int decode_is_start(void);
 extern int accidence_q_is_empty(void);
 extern int is_MST_done(void);
 

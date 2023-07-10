@@ -339,6 +339,12 @@ void Set_Plc_plc::EditCmd()//编辑指令
     SonMenuNo = 2;
     menuRight_info_show(2);
 }
+
+void Set_Plc_plc::Timer_on_slot()
+{
+
+}
+
 void Set_Plc_plc::paintEvent(QPaintEvent *)
 {
     QPainter painter( this);

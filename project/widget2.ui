@@ -22,6 +22,9 @@
      <height>440</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="frameShape">
     <enum>QFrame::NoFrame</enum>
    </property>
@@ -115,7 +118,7 @@
      <rect>
       <x>140</x>
       <y>20</y>
-      <width>39</width>
+      <width>30</width>
       <height>24</height>
      </rect>
     </property>
@@ -205,7 +208,7 @@
      <rect>
       <x>100</x>
       <y>20</y>
-      <width>39</width>
+      <width>30</width>
       <height>24</height>
      </rect>
     </property>
@@ -292,7 +295,7 @@
      <rect>
       <x>60</x>
       <y>20</y>
-      <width>39</width>
+      <width>30</width>
       <height>24</height>
      </rect>
     </property>
@@ -421,40 +424,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="t_but7">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>20</y>
-      <width>39</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>30</width>
-      <height>19</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>39</width>
-      <height>25</height>
-     </size>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QLabel" name="knife_dir">
     <property name="geometry">
      <rect>
@@ -483,7 +452,6 @@
    <zorder>widget_2</zorder>
    <zorder>widget</zorder>
    <zorder>t_but6</zorder>
-   <zorder>t_but7</zorder>
    <zorder>knife_dir</zorder>
   </widget>
  </widget>

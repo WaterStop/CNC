@@ -9,10 +9,10 @@ widget5_2::widget5_2(QWidget *parent) :
 {
     ui->setupUi(this);
     set_background();
+    INFO_init();
     set_button();
     set_curnum();
     Deal_Slot();
-    INFO_init();
 }
 
 widget5_2::~widget5_2()
@@ -51,6 +51,9 @@ void widget5_2::set_button()
     ui->textEdit_0->setFont(weiruanyahei4);
     ui->textEdit_1->setFont(weiruanyahei4);
     ui->textEdit_2->setFont(weiruanyahei4);
+    ui->textEdit_0->hide();
+    ui->textEdit_1->hide();
+    ui->textEdit_2->hide();
     if(scr_size==0)
     {
         ui->bt_type1->setGeometry(23,31,25,25);
@@ -76,9 +79,29 @@ void widget5_2::set_button()
 
 void widget5_2::INFO_init()
 {
-    ui->textEdit_0->setText("99");
-    ui->textEdit_1->setText("99");
-    ui->textEdit_2->setText("99");
+    int i;
+//    ui->textEdit_0->setText("99");
+//    ui->textEdit_1->setText("99");
+//    ui->textEdit_2->setText("99");
+    for (i=0;i<3;i++)
+    {
+        lab[i] = new QLabel(ui->frame);
+        lab[i]->setGeometry(180,30+i*50,91,42);
+    }
+    lab[0]->setStyleSheet("border-image:url(:/new/blue_pic/wg5_mod1_on.png);");
+    lab[1]->setStyleSheet("border-image:url(:/new/blue_pic/wg5_mod2_off.png);");
+    lab[2]->setStyleSheet("border-image:url(:/new/blue_pic/wg5_mod3_off.png);");
+
+    for (i=0;i<2;i++)
+    {
+        cur_tcode[i] = new QLabel(ui->frame);
+        cur_tcode[i]->setStyleSheet("color:white;");
+    }
+    cur_tcode[0]->setGeometry(80,85,41,15);
+    cur_tcode[0]->setFont(weiruanyahei6);
+    cur_tcode[1]->setGeometry(86,105,40,15);
+    cur_tcode[1]->setFont(weiruanyahei4);
+
 }
 
 void widget5_2::Deal_Slot()
@@ -135,4 +158,13 @@ void  widget5_2::set_curtype4_solt()
 {
     cur_type =3;
     set_curnum();
+}
+
+void widget5_2::Timer_on_slot()
+{
+    QString str;
+    str = QString("T%1").arg(motion_status->CurTCode,2,10,QLatin1Char('0'));
+    cur_tcode[0]->setText(str);
+    str = QString("%1").arg(motion_status->CurTCode,2,10,QLatin1Char('0'));
+    cur_tcode[1]->setText(str);
 }

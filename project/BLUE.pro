@@ -4,6 +4,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 QMAKE_CXXFLAGS += -g
+QT += network
+QT += gui-private
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -18,7 +20,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Bar.cpp \
-    MachineFusion.cpp \
     MachineProcess.cpp \
     MachineSequence.cpp \
     MachineTrace.cpp \
@@ -28,10 +29,14 @@ SOURCES += \
     cnavmodel.cpp \
     cnavview.cpp \
     fixedval_widget.cpp \
+    gaugeround.cpp \
     key_board.cpp \
+    key_board_2.cpp \
     main.cpp \
     mylineedit.cpp \
     myprogressbar.cpp \
+    mytablewidget.cpp \
+    navlistview.cpp \
     offset_knife.cpp \
     plc_fun_cmd.cpp \
     plc_plc_pic.cpp \
@@ -39,8 +44,17 @@ SOURCES += \
     popupwin1.cpp \
     popupwin_left.cpp \
     process_modify.cpp \
-    qroundprogressbar.cpp \
+    progressring.cpp \
+    set_alarm_info.cpp \
+    set_alm_note.cpp \
+    set_back_up.cpp \
+    set_data_para.cpp \
     set_dgn.cpp \
+    set_file_manage.cpp \
+    set_internet_set.cpp \
+    set_limit_and_time.cpp \
+    set_over_limit.cpp \
+    set_over_limit_set.cpp \
     set_plc_plc.cpp \
     set_widget.cpp \
     shm.c \
@@ -66,12 +80,12 @@ SOURCES += \
     widget3_8.cpp \
     widget3_9.cpp \
     widget4.cpp \
+    widget4_text.cpp \
     widget5.cpp \
     widget5_2.cpp
 
 HEADERS += \
     Bar.h \
-    MachineFusion.h \
     MachineProcess.h \
     MachineSequence.h \
     MachineTrace.h \
@@ -86,15 +100,19 @@ HEADERS += \
     decode.h \
     error.h \
     fixedval_widget.h \
+    gaugeround.h \
     global_variable.h \
+    gui_ctl.h \
     home.h \
     key_board.h \
+    key_board_2.h \
     m3.h \
-    machineStruct.h \
     mlinkdef.h \
     motion.h \
     mylineedit.h \
     myprogressbar.h \
+    mytablewidget.h \
+    navlistview.h \
     offset_knife.h \
     para.h \
     parse_syntax.h \
@@ -106,10 +124,19 @@ HEADERS += \
     popupwin_left.h \
     pos.h \
     process_modify.h \
-    qroundprogressbar.h \
+    progressring.h \
     save.h \
     servo.h \
+    set_alarm_info.h \
+    set_alm_note.h \
+    set_back_up.h \
+    set_data_para.h \
     set_dgn.h \
+    set_file_manage.h \
+    set_internet_set.h \
+    set_limit_and_time.h \
+    set_over_limit.h \
+    set_over_limit_set.h \
     set_plc_plc.h \
     set_widget.h \
     shm.h \
@@ -138,6 +165,7 @@ HEADERS += \
     widget3_8.h \
     widget3_9.h \
     widget4.h \
+    widget4_text.h \
     widget5.h \
     widget5_2.h
 
@@ -145,7 +173,9 @@ FORMS += \
     change_screentip.ui \
     fixedval_widget.ui \
     key_board.ui \
+    key_board_2.ui \
     myprogressbar.ui \
+    mytablewidget.ui \
     offset_knife.ui \
     plc_fun_cmd.ui \
     plc_plc_pic.ui \
@@ -153,7 +183,16 @@ FORMS += \
     popupwin1.ui \
     popupwin_left.ui \
     process_modify.ui \
+    set_alarm_info.ui \
+    set_alm_note.ui \
+    set_back_up.ui \
+    set_data_para.ui \
     set_dgn.ui \
+    set_file_manage.ui \
+    set_internet_set.ui \
+    set_limit_and_time.ui \
+    set_over_limit.ui \
+    set_over_limit_set.ui \
     set_plc_plc.ui \
     set_widget.ui \
     wedget1.ui \
@@ -176,6 +215,7 @@ FORMS += \
     widget3_8.ui \
     widget3_9.ui \
     widget4.ui \
+    widget4_text.ui \
     widget5.ui \
     widget5_2.ui
 
@@ -192,3 +232,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     image.qrc \
     image.qrc
+
+DISTFILES += \
+    blue_pic/wg4_probar_bk.png

@@ -15,7 +15,7 @@
 
 
 
-#define MINIM           0.000001
+#define MINIM 0.000001
 #define Minim 0.000001
 
 
@@ -38,11 +38,6 @@ extern struct plc_shm_s *plc_shm;
 
 #define TINY_DP(max_acc,period) (max_acc*period*period*0.001)
 
-//#define get_axis_pos_override_limit_mask(axis_num) (motion_status->override_limit_mask & ( 2 << (axis_num*2)))
-//#define get_axis_neg_override_limit_mask(axis_num) (motion_status->override_limit_mask & ( 1 << (axis_num*2)))
-//
-//#define set_axis_pos_override_limit_mask(axis_num) (motion_status->override_limit_mask | ( 2 << (axis_num*2)))
-//#define set_axis_neg_override_limit_mask(axis_num) (motion_status->override_limit_mask | ( 1 << (axis_num*2)))
 
 //#define isnan(v) _isnan(v)
 
@@ -138,6 +133,29 @@ typedef enum {
 
 
 
+/*
+用于提示系统处于何种状态
+0表示空，不需要显示
+从1开始需要显示
+*/
+typedef enum {
+    FIND_MARK=1,//正在找MARK点
+    FEED_SCALE_IS_ZERO,//进给倍率为0
+    FAST_SCALE_IS_ZERO,//快移倍率为0
+    SPIND_SPEED_ZERO,//主轴转速为0
+    AUX_CODE_EXECUTE,//辅助功能码正在执行
+    FEED_STOP,//进给保持中
+    G04,//程序暂停中
+    STEPTING,//单段暂停中
+    G0,//G0快移中
+    FEED_CUT,//切削进给中   
+    SCREW_CUT,//螺纹切削中
+    SCREW_WAIT_SPIN_V_CMP,//螺纹切削中，等待主轴速度到达
+    SCREW_WAIT_MARK,//螺纹切削中，等待主轴零点位置
+    SCREW_WAIT_START_ANGLE,//螺纹切削中，等待起始角位置
+    SERVO_NOT_RDY,//伺服未准备好 
+    HAND_RUNING,//手动移动中
+} RUN_STATE_t;
 
 
 
@@ -194,65 +212,73 @@ struct wheel_info_struct
     
 };
 
+/*
+手轮中断数据结构
+*/
+struct wheel_irq_info_struct 
+{
+    double surplus_length;//剩余长度
+    int have_wheel_turn;//0-手轮没有移动量，1-手轮有移动量
+    int wheel_done;//手轮执行完成 
+    int wheel_delta;//手轮本周期移动格数
+    int soft_limit_release;//超软限后反向移动标志
+    int hard_limit_release;//超硬限后反向移动标志，可以反向移动,1-表示正在反向移动
+    double min_acc_dec;//最小加减速
+    double max_speed;//最大速度
+    int index_latter_acc_time;//指数后加减速时间
+    int init_flag;//加速度等参数初始化，0-未进行初始化，1-已经初始化
+    int last_hand_wheel_val;//上一周期手轮的值，硬件传上来的值，用于计算本周期的增量
+
+    /*
+    需要初始化手轮中断的数据
+    1-需要初始化
+    0-不需要初始化
+    */
+    int need_init;
+
+    /*
+    手轮中断量
+    */
+    double irq_val;
+
+    /*
+    上周期手轮中断量
+    用于计算本周期的增量，把增量累加到motion_internal.current_pos[axis_num]
+    */
+    double last_irq_val;
+
+    /*
+    首次切换到手轮模式，需要同步一次last_hand_wheel_val值，用这个变量记录是否已经同步过了手轮的值，
+
+    置0的操作
+    上电默认是0，表示没有同步过，所以第一次会做同步处理
+    复位后设置为0，表示复位后需要同步手轮的值
+    切换到手轮模式时需要同步
+
+    置1的操作
+    同步完成后置1
+    */
+    int already_sync_hardware_val;
+    
+};
+
+
 struct spin_data_s
 {
-    //是否开始检测MARK信号的标记位
-    unsigned long latchFlag ;
-    
-    unsigned short SPZPulseEnb;//本地第一主轴Z脉冲使能信号 //LZ 20210629新版本硬件第二主轴使用变量的第二位，第一主轴使用变量的第一位
-    
-    char SPZPulseSignal ;// 主轴Z脉冲信号
-    
-    int SpindZeroPos ;// 主轴Z脉冲时的编码值
-    
-    unsigned short SPZPulseSign;//本地第一主轴Z信号输入状态
-    
-    unsigned short spinEncInput ;//主轴编码器输入脉冲数
 
-    int LastSpindSpeed[9];//上一次的主轴速度
-
-    double SpindleCoderNum;// 时间(ms)与编码器线数的比值
-
-    double spinAcuRev ;//hanwenye add 主轴从Z信号位置开始记录的主轴脉冲计数，用于计算主轴实际位置
-    
-    double SpindScaleIncVal ;//主轴编码器每个周期的刻度增量
-
-    double ObjectSpindleSpeed  ;//采样200ms得到的速度G32G34时使用
-
-    long CNC_Sspeed ;//主轴转速，8次采样滤波后的速度
-
-    double SpidleGearRatio ;//主轴电子齿轮比
-
-    double SpindleSampSpeed;//插补采样速度    
-
-    double spindle_scale;//主轴倍率，由PLC的G信号设置
-
-    int  CncViewSSpeed;//显示用的转速，滤波周期更大
-    
+    /*
+    -------------------------------------------------------设置
+    */
     //主轴当前挡位，在输入函数中设置，根据G信号确定，在计算主轴电子齿轮比时使用
     //0表示1挡
     //7表示8裆
     //最大是8档
     //计算主轴输出使用
-    int spind_gear;
+    int spind_gear;      
+    
+    int SPIN_ZSPD;//零速信号，通过实际速度与5转比较
 
-    /*
-    主轴的电子齿轮比，诊断用
-    */
-    double spindle_cmr_divd_cmd;
-
-    //主轴的位置反馈
-    double spind_pos_fb;
-
-    /*
-    主轴速度控制，在输入函数中根据PLC的G信号设置值
-    在输出函数中使用，判断是否输出主轴转速
-    -1：反转
-    0：停止
-    1：正转
-    */
-    int spind_speed_ctrl;
-
+    int SPIN_V_CMP;//速度一致信号，命令转速值与反馈值比较，差距小于5转    
     /*
     主轴当前的模式，
         0：速度模式，
@@ -264,10 +290,74 @@ struct spin_data_s
     int spind_mode;
 
     
+    
+    /*
+    -------------------------------------------------------计算主轴输出速度
+    */
+    double spindle_scale;//主轴倍率，由PLC的G信号设置
+
     //设定的主轴S值，上电有一个默认的速度，之后通过任务命令生成的运动段更改，等于NC程序中的S值
     //在自动模式下处理运动段时处理到S指令后更改
     double spind_speed_set;
 
+    /*
+    主轴的速度值
+    如果是总线主轴，此值就是速度对应的脉冲数
+    如果是模拟量主轴，此值就是对应的DA值(0-8192 对应 0-10V)
+    */
+    double spind_current_v_pulse;
+
+    /*
+    主轴的电子齿轮比，诊断用
+    */
+    double spindle_cmr_divd_cmd;
+
+    /*
+    主轴速度控制，在输入函数中根据PLC的G信号设置值
+    在输出函数中使用，判断是否输出主轴转速
+    -1：反转
+    0：停止
+    1：正转
+    */
+    int spind_speed_ctrl;
+    
+    /*
+    -------------------------------------------------------计算速度反馈
+    */
+    unsigned short spinEncInput ;//主轴编码器输入脉冲数
+    double ObjectSpindleSpeed  ;//采样200ms得到的速度G32G34时使用
+    long CNC_Sspeed ;//主轴转速，8次采样滤波后的速度
+    double SpidleGearRatio ;//主轴电子齿轮比
+    double SpindleSampSpeed;//插补采样速度    
+    int  CncViewSSpeed;//显示用的转速，滤波周期更大
+    /*
+    可以是函数的局部变量，便于诊断所以做成了全局变量
+    */
+    int LastSpindSpeed[9];//上一次的主轴速度，spinEncInput的值循环输入
+    double SpindleCoderNum;// 时间(ms)与编码器线数的比值
+    
+    double SpindScaleIncVal ;//主轴编码器每个周期的刻度增量
+    /*
+    -------------------------------------------------------Z信号
+    */
+    //是否开始检测MARK信号的标记位，用与M3主轴
+    unsigned long latchFlag ;
+
+    unsigned short SPZPulseEnb;//本地第一主轴Z脉冲使能信号 ，本地主轴用
+    unsigned short spin_z_clear;//Z清零，本地主轴用
+
+    unsigned short SPZPulseSign;//本地第一主轴Z信号输入状态，周期读取FPGA信号获取
+
+    int SpindZeroPos ;// 主轴Z脉冲时的编码值
+
+    double spinAcuRev ;//hanwenye add 主轴从Z信号位置开始记录的主轴脉冲计数，用于计算主轴实际位置
+    
+    /*
+    -------------------------------------------------------未使用
+    */    
+    
+    //主轴的位置反馈
+    double spind_pos_fb;
     /*
     由spind_speed_set和主轴倍率计算出来的脉冲数
     用法：如果主轴是速度模式，则判断PLC的主轴相关的G信号，如果G信号有，直接把这个值发给驱动，让主轴转，否则发0
@@ -275,12 +365,6 @@ struct spin_data_s
     同时也是位置模式下的主轴位置脉冲数，位置模式具体做法再考虑
     */
     double spind_speed_pulse;
-    
-    //通过处理任务命令队列时修改
-    //int spind_g98g99;//0-g98分进给，1-g99转进给
-
-    //通过处理任务命令队列时修改
-    //int spind_g97g96;//0-g97分进给，1-g96转进给
 
 };
 
@@ -309,18 +393,12 @@ struct motion_internal_struct
     //反向间隙和螺距补偿之后的位置值
     //由motion_internal_struct.current_pos经过螺距补偿和反向间隙补偿后得到
     double target_pos[MAX_AXIS_NUM];
-
-    double spind_current_pos[MAX_SPIND_NUM];//主轴本周期的位置
-
-
-    /*
-    主轴是速度值
-    如果是总线主轴，此值就是速度对应的脉冲数
-    如果是模拟量主轴，此值就是对应的DA值(0-8192 对应 0-10V)
-    */
-    double spind_current_v_pulse[MAX_SPIND_NUM];
+    
+    
 
     struct wheel_info_struct wheel_info[MAX_AXIS_NUM];//0-X,1-Z
+
+    struct wheel_irq_info_struct wheel_irq_info[MAX_AXIS_NUM];//0-X,1-Z
 
     //回零
     struct axis_struct home[MAX_AXIS_NUM];
@@ -343,54 +421,45 @@ struct motion_status_struct
     /*
     ------------------------------------------------------系统状态------------------------------------------------------
     */
-    //非零表示有急停
-    int emergency;//emergency stop 
+    //系统运行状态
+    //用于界面显示，指示系统运行信息，
+    //包括正在自动运行G0-1-2-3
+    //正在找MARK点等信息
+    //触发模式的形式赋值
+    //在每一次get_pos_cmds()函数开始清零，走到哪个流程就在哪个流程中赋值
+    RUN_STATE_t run_state;   
 
-    //需要在运动停止时执行复位操作
-    // 1-表示需要处理
+    //用于界面显示的值，由于每一次get_pos_cmds()函数开始清零,所以防止在清零和再次赋值之间界面读取该数值
+    //导致显示闪烁问题，在get_pos_cmds()函数的最后，用run_state给该值赋值
+    RUN_STATE_t run_state_show;  
+
+    //非零表示有急停
+    //运动处理COMMAND_STOP_NOW命令时设置为1
+    //运动的process_input(void)中判断PLC的G信号，如果急停设置为1，不清零
+    //运动的handle_reset(void)中，设置为0
+    //运动的check_for_faults(void)，检查是否有报警，且报警队列中没有急停，则添加报警，并且执行立即停stop_now();
+    int emergency;//emergency stop 
+    
+
+    //需要在运动停止时执行复位操作，目的是让自动运行立即减速停，给自动一个减速的过程
+    // 1-表示需要在减速停后再处理复位操作
     // 0-表示不需要处理
     //在复位操作中设置，如果当前系统是运行状态下按的复位，则设置此标志位为1
-    //在复位的设置此标志位判断之前设置为0，表示每一次复位都清除一次标志位?
-    //在处理完成此操作后设置为0
+    //在运动的tp_handle_abort()中，处理完成复位操作后设置为0    
     int need_movement_reset;
 
+    //运动报警标志位，1表示有报警，0表示没有报警
+    //在运动的check_for_faults(void)中检查报警队列的size，如果不等于零则设置为1，否则设置为0
+    //在handle_reset(void)复位函数中设置为0;
+    //如果检查到该标志的上升沿，则设置motion_internal->coord_tp.aborting = 1;
     int alarm;
 
-    //系统当前的运行模式,由模式切换函数更改数值
+    //系统当前的运行模式
+    //在命令处理函数中，根据相应的切换命令切换
     int run_style;
     
     //系统下一步规划切换到哪种模式，由命令处理函数处理任务-运动命令队列时更改
     int next_run_style; 
-
-    int is_van;// 1:空运行状态，0：非空运行状态，由命令处理函数处理任务-运动命令队列时更改
-
-    int is_machine_lock;// 1:机床锁锁住状态，0：不锁，由命令处理函数处理任务-运动命令队列时更改
-
-    //进入过机床锁的分支中，最终的输出没有输出到伺服，
-    //会导致伺服的脉冲数与运动的脉冲数差距很大
-    //所以机床锁之后应该同步一次伺服位置
-    //进入机床锁状态后置1，同步位置后置0
-    int in_machine_lock;
-
-    // 1:开启辅助锁状态 0：非辅助锁状态
-    //辅助锁如果是开启状态，运动在处理MST时，直接完成，不需要发送给PLC
-    int is_aux_lock; 
-
-     
-    // 1:开启单段状态 0：非单段状态
-    int is_step;
-
-
-
-      
-
-    //0:未开启手轮试切
-    // 1：开启手轮试切
-    //通过操作站的按钮触发PLC设置手轮试切G信号
-    //任务模块判断G信号，然后控制这个标志位
-    //由命令处理函数处理任务-运动命令队列时更改
-    int is_wheel_cut;
-
     
     //硬限位状态，在检查错误函数（check_for_faults）中，判断PLC的G信号决定是否置位
     /* 1 << (axis-num*2) = neg limit */
@@ -402,6 +471,8 @@ struct motion_status_struct
     int soft_limit;
     
     //限位忽略标志位,1:忽略硬限位和软限位报警，0:不忽略，由命令处理函数处理任务-运动命令队列时更改
+    //只做了简单判断，暂时没有策略会设置该变量为1
+    //考虑删除
     int override_limit_mask;  
 
     
@@ -409,7 +480,12 @@ struct motion_status_struct
     //认为系统上电后，首次读取过电机编码器后，伺服就准备好了
     //MIII总线形式的进给轴，读取编码器后就同步了电机编码器的位置
     //运动计算出来的值才是正确的脉冲值
+    //在成功读取了编码器值后，设置该编码器对应的位为1 
     int enc_is_read_done[MAX_MIII_ST];
+    
+    //所有的有编码器的从站都读过一次编码器值(同步过一次坐标)后，就可以往伺服队列中存放数据了
+    //在运动的process_input(void)中更新
+    int servo_is_ready;
     
     /*
     是否正在执行标志
@@ -421,28 +497,16 @@ struct motion_status_struct
     */
     int is_moving;
 
-    
-    //所有的有编码器的从站都读过一次编码器值(同步过一次坐标)后，就可以往伺服队列中存放数据了
-    int servo_is_ready;
-    
-
-    /*
-    运动模块复位处理完成标志，
-    */
-    int motion_reset_done;
-
     /*
     自动运行队列饥饿标志位
-    可以表示运动段的状态，用于与解释器同步
+    可以表示运动段的状态
     在自动中，如果读取运动段失败，则设置为1；
     如果成功，则设置为0
     复位时要设置为1
     初始化时设置为1
     */
     int motion_hungry;
-
-
-
+    
     /*
     当前的刀具号
     如果参数配置的刀号小于2，表示是排刀，这个变量在处理T代码的时候赋值
@@ -450,10 +514,28 @@ struct motion_status_struct
     */
     int CurTCode;
 
-    //表示MST发送给PLC的状态，0-M,1-S,2-T
-    
-    int MSTCode2PLC[3];
+    /*
+    检测PLC是否执行完成MST
+    执行完成MST后由运动设置为1
+    解释器复位会设置此位为1
+    解释器解析到MST时，设置此位为0
+    */
+    int MST_done;
 
+
+    //保存随动误差数值
+    //正常情况下随动误差实时计算
+    //如果随动误差报警，则停止计算随动误差，此值保持报警时的值
+    //复位需要清零此值
+    double follow_error_val[MAX_AXIS_NUM];
+
+    /*
+    随动误差报警标记，1表示有随动误差报警，0表示没有
+    用于复位时判断，是否同步进给轴编码器值
+    随动误差报警时设置1
+    复位时设置为0
+    */
+    int follow_error_exceed;
     
     /*
     ------------------------------------------------------进给轴相关------------------------------------------------------
@@ -489,6 +571,8 @@ struct motion_status_struct
     //反向间隙和螺距补偿之前的位置
     double pos[MAX_AXIS_NUM];//各个轴本周期计算后的插补位置
 
+    double abs_pos[MAX_AXIS_NUM];//绝对坐标值，由motion_status->pos在任务中通过计算得到
+
     //等于motion_internal->pulsed的值，为了给界面诊断使用
     double pulse[MAX_AXIS_NUM];//发送给伺服队列的脉冲数值，由struct axis_pose pos计算得到
 
@@ -508,9 +592,20 @@ struct motion_status_struct
     double requested_vel;
 
     /*
-    当前速度，合成速度
+    当前速度，合成速度,只有auto模式下更新此速度
     */
     double current_vel;
+
+
+    /*
+    各个轴的分轴速度，在servo_out()中根据各个轴的增量位置计算得到
+    */
+    double current_val_axis[MAX_AXIS_NUM];
+
+    /*
+    各个轴的合成速度，由current_val_axis[]速度平方和再开根号
+    */
+    double current_val_axis_compound;
 
 
     /*
@@ -527,6 +622,16 @@ struct motion_status_struct
     4-5TH
     */
     int select_axis;
+
+    /*
+    手轮中断的轴选信号,由PLC信号控制，再process_input中读取PLC信号 
+    0-表示选择了X轴
+    1-Z
+    2-Y
+    3-4TH
+    4-5TH
+    */
+    int select_irq_axis;
 
     //通过处理任务命令队列时修改
     int spind_g98g99;//0-g98分进给，1-g99转进给
@@ -554,7 +659,7 @@ struct motion_status_struct
 
     int spind_to_st[MAX_SPIND_NUM];//实现通过轴号快速找到从站号，根据参数计算得到
 
-
+    int tor_ref[SLV_ST_MAX];//总线反馈的扭矩，主要用于界面显示
 
     /*
     ------------------------------------------------------IO数据------------------------------------------------------
@@ -567,8 +672,8 @@ struct motion_status_struct
     unsigned short encode_input_spindle1;//本地主轴1编码器
     unsigned short encode_input_spindle2;//本地主轴2编码器
 
-
-
+    //保存转化后的值，范围是0-1
+    double ad1;//模拟量输入1口
     /*
     ------------------------------------------------------回零------------------------------------------------------
     */
@@ -594,16 +699,34 @@ struct motion_status_struct
     //手动插补进入速度计算的次数
     int in_hand_axis_enable_num[MAX_AXIS_NUM];
 
+    /*
+    ------------------------------------------------------未使用------------------------------------------------------
+    */
+    int is_van;// 1:空运行状态，0：非空运行状态，由命令处理函数处理任务-运动命令队列时更改
+
+    int is_machine_lock;// 1:机床锁锁住状态，0：不锁，由命令处理函数处理任务-运动命令队列时更改
+
+    //进入过机床锁的分支中，最终的输出没有输出到伺服，
+    //会导致伺服的脉冲数与运动的脉冲数差距很大
+    //所以机床锁之后应该同步一次伺服位置
+    //进入机床锁状态后置1，同步位置后置0
+    int in_machine_lock;
+
+    // 1:开启辅助锁状态 0：非辅助锁状态
+    //辅助锁如果是开启状态，运动在处理MST时，直接完成，不需要发送给PLC
+    int is_aux_lock; 
+     
+    // 1:开启单段状态 0：非单段状态
+    int is_step;      
+
+    //0:未开启手轮试切
+    // 1：开启手轮试切
+    //通过操作站的按钮触发PLC设置手轮试切G信号
+    //任务模块判断G信号，然后控制这个标志位
+    //由命令处理函数处理任务-运动命令队列时更改
+    int is_wheel_cut;
 
 };
-
-
-#define SET_MOVING_FLAG(axis_num,fl) if (fl) motion_status->is_moving |= (1<<axis_num); else  (motion_status)->is_moving &= ~(1<<axis_num);
-#define GET_MOVING_FLAG(axis_num) (motion_status->is_moving & (1<<axis_num) ? 1 : 0)
-//#define GET_MOVING_FLAG(axis_num) (motion_status->is_moving & (1<<axis_num) ? 1 : 0)
-
-
-
 
 extern void Interp_Task1(void *prio) ;
 extern int init_motion(void);
@@ -614,5 +737,7 @@ extern void handle_reset_during_movement(void);
 extern void MeasureAxisSpeed(void); //主轴转速测量
 
 extern void stop_now(void);
+
+extern void do_forward_kins(void);
 
 #endif//MOTION_H

@@ -52,6 +52,7 @@ void widget3_3::INFO_init()
     dir_2 = 1;
     ClearEdit();
     Foucus_init();
+    change_axisdir_icon();
 }
 
 void widget3_3::set_edit()
@@ -202,13 +203,14 @@ void widget3_3::change_axisdir_icon()
     }
     if(dir_2==1)
     {
-        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt2.png);}");
+        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt4.png);}");
     }
     else if(dir_2==-1)
     {
-        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt4.png);}");
+        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt2.png);}");
     }
 }
+
 
 void widget3_3::change_axisdir1_slot()
 {
@@ -256,19 +258,68 @@ void widget3_3::edit_input_slot(QString str)
     }
     else if(ui->edit_2->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(2,str);
     }
     else if(ui->edit_3->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(3,str);
     }
     else if(ui->edit_4->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(4,str);
     }
     else if(ui->edit_5->hasFocus())
     {
         emit edit_input_signal(5,str);
+    }
+}
+
+void widget3_3::updateTrCnCr()
+{
+    double feed;
+    double depth;
+    int times;
+    double Tr;
+    double Cr;
+    int Cn;
+    static double beforeTr;
+    static double beforeCr;
+    static int beforeCn;
+    QString str;
+    Tr = ui->edit_2->text().toDouble();
+    Cn = ui->edit_3->text().toInt();
+    Cr = ui->edit_4->text().toDouble();
+
+    feed = Cr / (double)Cn;
+    times = Cr / Tr;
+    depth = Tr * (double)Cn;
+
+    if(beforeTr != Tr)
+    {
+        str = QString("%1").arg(depth);
+        ui->edit_4->setText(str);
+        beforeTr = Tr;
+        beforeCn = Cn;
+        beforeCr = depth;
+    }
+    else if(beforeCn != Cn)
+    {
+        str = QString("%1").arg(depth);
+        ui->edit_4->setText(str);
+        beforeTr = Tr;
+        beforeCn = Cn;
+        beforeCr = depth;
+    }
+    else if(beforeCr != Cr && Cn != 0)
+    {
+        str = QString("%1").arg(feed);
+        ui->edit_2->setText(str);
+        beforeTr = feed;
+        beforeCn = Cn;
+        beforeCr = Cr;
     }
 }
 
@@ -290,6 +341,9 @@ void widget3_3::loadWorkInfo(int index)
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->outerCircle1.F);
         ui->edit_5->setText(str);
+        dir_1 = tem_val->outerCircle1.zDir;
+        dir_2 = tem_val->outerCircle1.xDir;
+        change_axisdir_icon();
     }
     else if(cur_work_mod==likong1)
     {
@@ -303,6 +357,9 @@ void widget3_3::loadWorkInfo(int index)
         ui->edit_4->setText(str);
         str = QString("%1").arg(tem_val->innerHole1.F);
         ui->edit_5->setText(str);
+        dir_1 = tem_val->innerHole1.zDir;
+        dir_2 = tem_val->innerHole1.xDir;
+        change_axisdir_icon();
     }
 }
 
@@ -316,6 +373,17 @@ bool widget3_3::wedget3_3ToProcessList(MachineProcess* dealInterfaceData, s_oute
     outerCircle1->Cn = ui->edit_3->text().toInt();
     outerCircle1->Cr = ui->edit_4->text().toDouble();
     outerCircle1->F = ui->edit_5->text().toDouble();
+    outerCircle1->startCord.x = barstock_L1*dealInterfaceData->m_barScale;
+    outerCircle1->startCord.y = barstock_D1*dealInterfaceData->m_barScale;
+
+//    decode_status->GlobMacroBuf[GetIndexByLine(501)] = outerCircle1->L;//F
+//    decode_status->GlobMacroBuf[GetIndexByLine(502)] = ;//角度
+//    decode_status->GlobMacroBuf[GetIndexByLine(503)] = ;//螺距
+//    decode_status->GlobMacroBuf[GetIndexByLine(504)] = ;//起始角度
+//    decode_status->GlobMacroBuf[GetIndexByLine(505)] = ;//圆弧顺逆时针
+//    decode_status->GlobMacroBuf[GetIndexByLine(506)] = ;//X轴增量
+//    decode_status->GlobMacroBuf[GetIndexByLine(507)] = ;//Z轴增量
+//    decode_status->GlobMacroBuf[GetIndexByLine(508)] = ;//Z轴增量
 
     if(true == dealInterfaceData->firstInsystem)
     {
@@ -403,7 +471,9 @@ void widget3_3::widget3_3_editDataToGCode()
         }
         save_flg = 0;
     }
+    dealInterfaceData->outputGCode_auto();
     dealInterfaceData->outputGCode();
     dealInterfaceData->textRecordData();
+    dealInterfaceData->recordVariable();
 }
 

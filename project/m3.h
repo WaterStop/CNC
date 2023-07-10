@@ -243,6 +243,8 @@ extern unsigned short svcmdStat[SLV_ST_MAX];
 
 extern MIII_MST MiiiMst;
 
+extern int m3WDTError;
+
 
 #define MLINK_STATION_DISCONNECT_BIT        0x0001
 #define MLINK_STATION_CONNECT_BIT        0x0002
@@ -388,6 +390,8 @@ extern void init_m3(void);
 void star_communication(void);
 
 extern int rspSVCMD(int st);
+
+extern void m3_reset(void);
 
 #endif
 

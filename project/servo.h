@@ -42,8 +42,11 @@ extern int getM3SpindleStation(int num);
 extern void spindleStop(int st);
 extern void spindleRun(int st, long refSpeed);
 
+extern void miii_axis_enable(int st);
+extern void miii_axis_disable(int st);
+extern int get_miii_state(int st);
 
-
-
+extern void local_spindle_run(int dir);
+extern void local_spindle_stop(void);
 
 #endif //SERVO_H

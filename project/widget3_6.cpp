@@ -52,6 +52,7 @@ void widget3_6::INFO_init()
     dir_2 = 1;
     ClearEdit();
     Foucus_init();
+    change_axisdir_icon();
 }
 
 void widget3_6::set_edit()
@@ -88,6 +89,15 @@ void widget3_6::set_edit()
         ui->edit_6->setGeometry(94,266,110,25);
 
     }
+    for (int i=0;i<5;i++)
+    {
+        lab_unit[i] = new QLabel(ui->frame);
+        lab_unit[i]->setFont(weiruanyahei4);
+        lab_unit[i]->setStyleSheet("color:white;");
+        lab_unit[i]->setGeometry(224,48+i*44,30,25);
+        lab_unit[i]->setText("mm");
+    }
+    lab_unit[4]->setGeometry(224,265,30,25);
 }
 
 void widget3_6::set_button()
@@ -267,22 +277,24 @@ void widget3_6::change_axisdir_icon()
     }
     if(dir_2==1)
     {
-        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt2.png);}");
+        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt4.png);}");
     }
     else if(dir_2==-1)
     {
-        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt4.png);}");
+        ui->bt_l_2->setStyleSheet("QPushButton{border-image:url(:/new/blue_pic/wg3_2_l_bt2.png);}");
     }
 }
 
 void widget3_6::change_axisdir1_slot()
 {
+    qDebug()<<"dir_1="<<dir_1;
     dir_1 = dir_1*-1;
     change_axisdir_icon();
 }
 
 void widget3_6::change_axisdir2_slot()
 {
+    qDebug()<<"dir_2="<<dir_2;
     dir_2 = dir_2*-1;
     change_axisdir_icon();
 }
@@ -339,6 +351,10 @@ void widget3_6::loadWorkInfo(int index)
         ui->edit_5->setText(str);
         str = QString("%1").arg(tem_val->screwThread1.F);
         ui->edit_6->setText(str);
+        dir_1 = tem_val->screwThread1.zDir;
+        dir_2 = tem_val->screwThread1.xDir;
+        qDebug()<<"Z="<<tem_val->screwThread1.zDir<<"X="<<tem_val->screwThread1.xDir;
+        change_axisdir_icon();
     }
     else if(cur_work_mod==luowen3)
     {
@@ -354,6 +370,10 @@ void widget3_6::loadWorkInfo(int index)
         ui->edit_5->setText(str);
         str = QString("%1").arg(tem_val->screwThread3.F);
         ui->edit_6->setText(str);
+        dir_1 = tem_val->screwThread3.zDir;
+        dir_2 = tem_val->screwThread3.xDir;
+        qDebug()<<"Z="<<tem_val->screwThread3.zDir<<"X="<<tem_val->screwThread3.xDir;
+        change_axisdir_icon();
     }
 }
 
@@ -365,14 +385,17 @@ void widget3_6::edit_input_slot(QString str)
     }
     else if(ui->edit_2->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(2,str);
     }
     else if(ui->edit_3->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(3,str);
     }
     else if(ui->edit_4->hasFocus())
     {
+        updateTrCnCr();
         emit edit_input_signal(4,str);
     }
     else if(ui->edit_5->hasFocus())
@@ -382,6 +405,52 @@ void widget3_6::edit_input_slot(QString str)
     else if(ui->edit_6->hasFocus())
     {
         emit edit_input_signal(6,str);
+    }
+}
+
+void widget3_6::updateTrCnCr()
+{
+    double feed;
+    double depth;
+    int times;
+    double Tr;
+    double Cr;
+    int Cn;
+    static double beforeTr;
+    static double beforeCr;
+    static int beforeCn;
+    QString str;
+    Tr = ui->edit_2->text().toDouble();
+    Cn = ui->edit_3->text().toInt();
+    Cr = ui->edit_4->text().toDouble();
+
+    feed = Cr / (double)Cn;
+    times = Cr / Tr;
+    depth = Tr * (double)Cn;
+
+    if(beforeTr != Tr)
+    {
+        str = QString("%1").arg(depth);
+        ui->edit_4->setText(str);
+        beforeTr = Tr;
+        beforeCn = Cn;
+        beforeCr = depth;
+    }
+    else if(beforeCn != Cn)
+    {
+        str = QString("%1").arg(depth);
+        ui->edit_4->setText(str);
+        beforeTr = Tr;
+        beforeCn = Cn;
+        beforeCr = depth;
+    }
+    else if(beforeCr != Cr && Cn != 0)
+    {
+        str = QString("%1").arg(feed);
+        ui->edit_2->setText(str);
+        beforeTr = feed;
+        beforeCn = Cn;
+        beforeCr = Cr;
     }
 }
 
@@ -412,7 +481,11 @@ bool widget3_6::wedget3_6ToProcessList(MachineProcess* dealInterfaceData, s_scre
     }
     else
     {
-        if (false == dealInterfaceData->addNode(*screwThread1))
+        if(modify_flg==1)
+        {
+            dealInterfaceData->changeNode(cur_Node, *screwThread1);
+        }
+        else  if (false == dealInterfaceData->addNode(*screwThread1))
         {
             return false;
         }
@@ -422,6 +495,8 @@ bool widget3_6::wedget3_6ToProcessList(MachineProcess* dealInterfaceData, s_scre
 
 bool widget3_6::wedget3_6ToProcessList(MachineProcess* dealInterfaceData, s_screwThreadMode3* screwThread3, Ui::widget3_6* ui)
 {
+    screwThread3->xDir = dir_2;
+    screwThread3->zDir = dir_1;
     screwThread3->L = ui->edit_1->text().toDouble();
     screwThread3->Tr = ui->edit_2->text().toDouble();
     screwThread3->Cn = ui->edit_3->text().toInt();
@@ -441,7 +516,11 @@ bool widget3_6::wedget3_6ToProcessList(MachineProcess* dealInterfaceData, s_scre
     }
     else
     {
-        if (false == dealInterfaceData->addNode(*screwThread3))
+        if(modify_flg==1)
+        {
+            dealInterfaceData->changeNode(cur_Node, *screwThread3);
+        }
+        else  if (false == dealInterfaceData->addNode(*screwThread3))
         {
             return false;
         }
@@ -487,6 +566,8 @@ void widget3_6::widget3_6_editDataToGCode()
         }
         save_flg = 0;
     }
+    dealInterfaceData->outputGCode_auto();
     dealInterfaceData->outputGCode();
     dealInterfaceData->textRecordData();
+    dealInterfaceData->recordVariable();
 }

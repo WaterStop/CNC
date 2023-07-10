@@ -15,6 +15,7 @@
 
 #include "decode.h"
 #include "para.h"
+#include "gui_ctl.h"
 
 #define test 1
 
@@ -54,6 +55,13 @@ struct motion_err_struct *motion_warn = &motion_warn123;
 //struct para_s * para = NULL;
 struct para_s  para123;
 struct para_s *para = &para123;
+
+struct task_command_queue_s task_command;
+struct task_command_queue_s * task_command_q=&task_command;
+
+struct gui_ctl_s gui_ctl123;
+struct gui_ctl_s *gui_ctl=&gui_ctl123;
+
 
 #if 0
 char * shm_mbuff_alloc(char * name,int size,int flag)
@@ -420,6 +428,43 @@ int share_para(int need_init)
 }
 
 
+/*
+GUI共享内存
+*/
+int share_gui_ctl(int need_init)
+{
+    int fd;
+    int ret = 1;
+    //fd = open("./shm/share_gui_ctl",O_RDWR|O_CREAT ,0777);
+    fd = open("/home/root/shm/share_gui_ctl",O_RDWR|O_CREAT ,0777);
+    if(-1 == fd)
+    {
+        error_printf("share_gui_ctl,open error,%s:%d\n",__FILE__,__LINE__);
+        return -1;
+    }
+    int f_ret = ftruncate(fd, sizeof(struct gui_ctl_s)+50);
+    if (-1 == f_ret)//成功返回0
+    {
+        error_printf("share_gui_ctl ftruncate error,%s:%d\n",__FILE__,__LINE__);
+    }
+#if test==0
+    gui_ctl = mmap(NULL,sizeof(struct gui_ctl_s),PROT_READ | PROT_WRITE,MAP_SHARED,fd,0);
+
+    if(gui_ctl == MAP_FAILED)
+    {
+        error_printf("share_gui_ctl,mmap error,%s:%d\n",__FILE__,__LINE__);
+        ret = -1;
+        return ret;
+    }
+
+    if(need_init == 1)
+    {
+        memset(gui_ctl,0,sizeof(struct gui_ctl_s));
+    }    
+ #endif
+    close(fd);    
+    return ret;
+}
 
 
 int shm_init(void)
@@ -511,8 +556,15 @@ int shm_init(void)
     usleep(1000);
     my_print("share_para ok\n");
 
-    return 1;
+    ret= share_gui_ctl(0);
+    if(-1 == ret)
+    {
+        return -1;
+    }
+    usleep(1000);
+    my_print("share_gui_ctl ok\n");
 
+    return 1;
 }
 
 

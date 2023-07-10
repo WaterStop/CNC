@@ -21,7 +21,8 @@ public:
     void show_wg2_popwin();
     void pic_update(int index,QString str);
     void clear_str_info();
-    void set_bt_sett();//设定按钮坐标
+    void set_bt_jump();//设定按钮坐标
+    void UPdate_scr();
     //MachineProcess *processData;
 private:
     Ui::widget2 *ui;
@@ -65,11 +66,13 @@ private:
     void DrawDirection();
     void PaintDirection();
     QString edit_str[7];
-    QPushButton *bt_showindex[9];
+    QPushButton *bt_showindex[9];//用于跳转至参数界面
+    QPushButton *bt_barpic;
     widget2_workpic *work_pic;
 public slots:
     void show_wg2_popwin_slot();
     void DateUpdate_slot();
+    void Timer_on_slot();
 private slots:
     void on_b_but2_clicked();
     void set_wg2_workmode_slot();
@@ -83,6 +86,18 @@ private slots:
     void set_wg2_t_button_slot4();
     void set_wg2_t_button_slot5();
     void set_wg2_t_button_slot6();
+    void jump_bt_slot();
+    void jump_bt_slot1();
+    void jump_bt_slot2();
+    void jump_bt_slot3();
+    void jump_bt_slot4();
+    void jump_bt_slot5();
+    void jump_bt_slot6();
+    void jump_bt_slot7();
+    void jump_bt_slot8();
+    void deal_barpic_slot();//处理棒料工艺图
+signals:
+    void page_jump_signal(int index);
 };
 
 #endif // WIDGET2_H

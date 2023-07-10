@@ -38,6 +38,8 @@ typedef enum
     TC_TYPE_G2,
     TC_TYPE_G3,
     TC_TYPE_G28,//回零
+    TC_TYPE_G96,//恒线速度
+    TC_TYPE_G97,//取消恒线速度
     TC_TYPE_RIGIDTAP,//刚性攻丝
     TC_TYPE_SCREW,//螺纹
     TC_TYPE_MAC_HOME,//回机床零点
@@ -277,79 +279,52 @@ struct screw_s
     //合成位移量
     double tmag;
 
-    int G34_flag;//表示G34变螺距螺纹，0表示G32
-
-    int FeedDirectX,FeedDirectZ;
-    double G32ScrewValue;//螺纹导程
-    double G34ScrewValue;
-    double G34TmpScrewValue;
-    double acc;
+    double G32ScrewValue;//螺纹导程，添加运动段时设置此值
+    
+    double acc;//螺纹加速度
 
     double angle;//起始角度
-    double LongAxisLen, ShortAxisLen;     //长轴和短轴
-    int CNC_ScrewInterpFlag;     //切削螺纹标志 1:发送主轴准停信号 2:等待主轴零点信号 3:等待主轴角度偏移 4:加工螺纹 5:退尾处理
-    int ScrewSpindleOftNum ;     //由偏移角度算出的主轴编码器偏移数
-    double LongExitTailLen, ShortExitTailLen;     //短轴和长轴的退尾量
-    double ScrewSpeedRatio ;     //长短轴速度比
-    double ScrewIncValR ;     //变距螺纹的增量值R
-    double G34SumSp ;     //G34的主轴转过圈数
-    double SumSpDelta ;     //螺纹加工，主轴转过的圈数
-    int ScrewWaitTime ;     //螺纹等待时间
-    char LongDecelerateFlag , ShortDecelerateFlag ;     //长短轴减速标志
-    int LongDeceType ;     // 长轴减速类型　0:无　1:按一定加速度 2:变距减速
-    char LongFirstIntoDeceFlag , ShortFirstIntoDeceFlag ;     //长短轴第一次进入减速标志
-    double LongCurrentSpeed , ShortCurrentSpeed ;     // 长短轴当前速度
-    double LongDeceAcc , ShortDeceAcc ;     // 长短轴的减加速度
-    double ShortLinAcc ;     // 短轴退尾时的加速度
-    char LongInterpCompleteFlag ;     //长轴插补完成标志
-    char ShortInterpCompleteFlag ;     //短轴插补完成标志
-    double SpidleRatioCoeff;     // 比例系数
-    int ScrewSpeedArrive ;     // 速度是否到达当前主轴速度S*当前螺距值D
-    char PreSegScrew ;     // 上段为螺纹插补
-    char NextSegScrew ;     // 下段为螺纹插补
-    double ScrewStartSpeed ;     // 螺纹长轴起始速度
-    int ScrewAddSpeedN ;     // 螺纹加速周期
-    double AddStartScrewVal ;     // 加速时的起始螺距
-    double AddStartScrewR ;     // 起始螺距 加速时的变距R值
-    double LongAxisEndSpeed ;     // 螺纹切削的长轴段尾速度
-    int ContinueScrewType ;     // 连续螺纹类型 0: 无　1:锥度一样 2:锥度不一样 3:其它
-    double ScrewAccSumSp ;     // 螺纹加速过程的主轴转动圈数
-    double ScrewAccDistance ;     // 螺纹加速过程的加速距离
-    double ScrewDecDistance[2];     // 螺纹快到终点时的减速距离 0:长轴的减速距离 1:短轴开始减速的长轴距离
-    int ScrewDecN[2];     // 减速周期数  0:长轴的减速周期数 1:短轴的减速周期数
-    double NextG32RValue;     // 下段螺纹　增量值R
-    double NextScrewSpeedRatio;     // 下段螺纹速度比例
-    int NextShortFeedDirect ;
-    int StartSampSpindleSpeed ;     // 开始采样主轴速度
-    double DgnScrewAccSpPos;     // 诊断　加速完时主轴的位置
-    double DgnScrewAccZPos;     // 诊断　　加速完时长轴的位置
-    int DgnScrewStartSpPos;     // 诊断 主轴起始位置(与零点的偏差值)
-    int DgnScrewMinStartSpPos ;     //主轴最小起始位置(与零点的偏差值)
-    int DgnScrewMaxStartSpPos ;     //主轴最大起始位置(与零点的偏差值)
-    double DgnScrewMinWaveVal ;     // 10000
-    double DgnScrewMaxWaveVal ;     //
-    //-----------------------------------------------------------------//
-    int ScrewInsertSegFlag ;     // 插入段标志
-    double LinkSegLongStartDis ;     // 进入插入段的剩余距离
-    double LinkSegStartPos[2] ;     // 连续螺纹插入段的起点
-    double LinkSegEndPos[2] ;     // 连续螺纹插入段的终点
-    double LinkSegCurSp ;     // 插入段过程中的主轴位置
-    double LinkSegSumSp ;     // 插入段过程中的主轴总移动量
-    double SumSpShortLinkSeg[2] ;     // 0:圴速区　1:变速区
-    double SumSpLongLinkSeg[2] ;
-    double LinkSegShortRVal ;     // 短轴增量值R
-    double LinkSegLongRVal ;     // 长轴增量值R
-    double LinkSegShortScrew[2] ;     //短轴起始和终点螺距
-    double LinkSegLongScrew[2] ;     //长轴起始和终点螺距
-    double FirstLinkSegSpSpeed ;
-    double PreAccSpPos[2] ;     // 0:短轴在变速时的主轴位置 1:长轴在变速时的主轴位置
-    double ObjectSpeed;
+
+    int ThreadLongFlag;//长短轴标志  1:z轴是长轴  0:x轴是长轴
+
+    double LongAxisLen,ShortAxisLen;//长轴长度，短轴长度
+
+    double long_tail,short_tail;//退尾长度
+
+    double LongAxisProgress;//长轴走过的距离，用于计算长轴剩余距离
+
+    double ScrewSpeedRatio;//长短轴速度比，短轴除以长轴 的绝对值  用于根据长轴速度计算短轴速度
+
+    double LongCurrentSpeed,ShortCurrentSpeed;//长轴速度和短轴速度
+
+    double ScrewStartSpeed;//螺纹起始速度
+
+    double LongAxisEndSpeed;//结束速度，由参数获取
+
+    double ScrewSpindleOftNum;//启示角对应的脉冲值，根据公式，计算出来的是一个大于0的数
 
 
-    int Dec_ovrd_cofe;//减速标志位，0表示减速，1表示不减速
+    //变螺距螺纹
+    int G34_flag;
+    double ScrewIncValR;//螺距变化量，
 
-    double StepCoefficientX;
-    double StepCoefficientZ;
+
+    //螺纹状态机 status
+    /*
+    0-螺纹数据段预处理，处理完成后设置为1
+    1-等待主轴Z信号位置+角度偏移，找到偏移后设置为2
+    2-螺纹加工过程。每周期计算长轴剩余距离，<=长轴退尾距离后设置开始退尾标志
+    */
+    int status;
+
+    int start_tail;//开始退尾标志，注意初始化时要设置为0
+
+    
+
+    
+
+    
+
 };
 
 
@@ -512,13 +487,7 @@ struct tcq_struct
     int size;
 };
 
-/*
-螺纹数据
-*/
-struct  screw_data_s
-{
-    int ThreadLongFlag;//长轴标志，表示哪个轴是长轴，0:X轴 1:Z轴
-};
+
 
 //联动轨迹规划器
 //内部的变量都需要通过函数设置，不可以直接设置
@@ -659,13 +628,6 @@ struct tp_struct
     */
     double spindle_speed_back;
 
-    /*
-    螺纹数据
-    */
-    struct  screw_data_s screw_data;
-
-
-
     //-----------------------------------------------------------------------以下为诊断数据用的变量
     double start_pos[MAX_AXIS_NUM];
     double end_pos[MAX_AXIS_NUM];
@@ -695,6 +657,13 @@ struct tp_struct
     double g2g3_v_target;//G2g3的目标速度
     double g2g3_cur_v;
     double angle;
+
+
+    //螺纹
+    double screw_dx;//长轴剩余距离
+    double screw_v_target;//螺纹加工长轴的目标速度
+    double screw_cur_v;//螺纹加工当前速度
+    
 
     
 };
@@ -756,9 +725,19 @@ extern int tp_add_mst(struct tp_struct * tp,//轨迹规划器指针
                     int sub_id,
                     struct state_tag_s tag//运动段模态信息
                     );
+
+extern int tp_add_g96(struct tp_struct * tp,//轨迹规划器指针
+                    int id,
+                    int sub_id,
+                    struct state_tag_s tag//运动段模态信息
+                    );  
                     
-extern void tp_calculate_trapezoidal_accel();
-extern void tp_calculate_s_accel();
+extern int tp_add_g97(struct tp_struct * tp,//轨迹规划器指针
+                    int id,
+                    int sub_id,
+                    struct state_tag_s tag//运动段模态信息
+                    );                      
+                    
 extern int tp_set_tp_current_pos(struct tp_struct * tp,double *pos);
 extern int tp_init(struct tp_struct *  tp);
 extern int tp_simple_tp_init(struct simple_tp_struct * tp);
@@ -776,7 +755,7 @@ extern void init_wheel_info_struct(void);
 extern void hand_wheel_delta_resource(void);
 extern unsigned short read_hand_wheelor_code_val(int hardware, unsigned short CurVal);
 
-
+extern int hand_wheel_irq(void);//手轮中断
 
 
 #endif

@@ -68,7 +68,7 @@ typedef enum
     ERROR_DECODE=2000,//解释器用报警号
         ERROR_DECODE_SKIP_SEG_FLAG,//本段是跳段
         ERROR_DECODE_HAVE_POUNE,//本段有#变量，需要等待运动同步
-        ERROR_DECODE_ALARM,//表示有报警
+        ERROR_DECODE_ALARM,//解释器报警
         ERROR_DECODE_NOT_HAVE_START_FLAG,//没有开始标志
         ERROR_DECODE_ACCIDENCE_Q_IS_FULL,//词法分析队列满了，不能继续词法译码
         ERROR_DECODE_ACCIDENCE_Q_IS_EMPTE,//词法分析队列没有数据，不能继续语法译码
@@ -117,6 +117,7 @@ typedef enum
 
     ERROR_MOTION=3000,
          ERROR_MOTION_INVALID_AXIS_NUM,//无效的进给轴号
+         ERROR_MOTION_INVALID_SPIND_NUM,//无效的主轴轴号
          ERROR_MOTION_INVALID_RUN_STYLE,//无效的运行状态
          ERROR_MOTION_NAN,//NAN错误
          ERROR_MOTION_INVALID_NEXT_RUN_STYLE,//下一个状态错误
@@ -157,6 +158,12 @@ typedef enum
          ERROR_MOTION_CAN_NOT_SEND_MST_TO_PLC,//给PLC发送MST信号时，G4.3是1,表示MST的逻辑顺序出现问题
          ERROR_MOTION_MST_CAN_NOT_REVERSE,//MST段不可以反向运行
 
+         ERROR_MOTION_FOLLOW_ERROR_X,//随动误差报警
+         ERROR_MOTION_FOLLOW_ERROR_Z,
+         ERROR_MOTION_FOLLOW_ERROR_Y,
+         ERROR_MOTION_FOLLOW_ERROR_4,
+         ERROR_MOTION_FOLLOW_ERROR_5,
+         
     ERROR_PLC=4000,
     ERROR_PLC_OPEN_ERROR,//看门狗错误，
     ERROR_PLC_A0_0,//PLC A报警

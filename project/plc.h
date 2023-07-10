@@ -43,8 +43,7 @@ typedef struct {
 
 struct LadArrayplc {
     int m_lSize;//梯图行数
-    Ladder_Node m_pIndex[LadFile_MaxRow + 1];//xsr 2023.4.3
-
+    Ladder_Node  m_pIndex[LadFile_MaxRow + 1];
 };
 
 
@@ -114,7 +113,7 @@ plc工作
     */
     int control;
     unsigned char x[X_NUM];     //外界传入的?
-    unsigned char xl[X_NUM];    //实际应用的值，外界取用的的时候取这个??
+    unsigned char xl[X_NUM];    //滤波后的值，实际应用的值，外界取用的的时候取这个??
     unsigned char y[Y_NUM];
     unsigned char f[NUM_F];
     unsigned char g[NUM_G];   
@@ -323,6 +322,7 @@ extern void clean_mst_f_signal(void);
 #define PLC_MACRO_INPUT_14 'G',55,6 //宏输入信号14位
 #define PLC_MACRO_INPUT_15 'G',55,7 //宏输入信号15位
 
+#define PLC_HAND_ISR_REQUEST 'G',56 //手脉中断标志请求信号
 #define PLC_HAND_ISR_REQUEST_X 'G',56,0 //手脉中断标志请求信号X轴 运动处理
 #define PLC_HAND_ISR_REQUEST_Z 'G',56,1 //手脉中断标志请求信号Z轴
 #define PLC_HAND_ISR_REQUEST_Y 'G',56,2 //手脉中断标志请求信号Y轴

@@ -168,6 +168,7 @@ void key_board::press_num_0_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_0, Qt::NoModifier, QString("0"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_1_slot()
 {
@@ -180,6 +181,7 @@ void key_board::press_num_1_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_1, Qt::NoModifier, QString("1"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_2_slot()
 {
@@ -192,6 +194,7 @@ void key_board::press_num_2_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_2, Qt::NoModifier, QString("2"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_3_slot()
 {
@@ -204,6 +207,7 @@ void key_board::press_num_3_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_3, Qt::NoModifier, QString("3"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_4_slot()
 {
@@ -216,6 +220,7 @@ void key_board::press_num_4_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_4, Qt::NoModifier, QString("4"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_5_slot()
 {
@@ -228,6 +233,7 @@ void key_board::press_num_5_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_5, Qt::NoModifier, QString("5"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_6_slot()
 {
@@ -240,6 +246,7 @@ void key_board::press_num_6_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_6, Qt::NoModifier, QString("6"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_7_slot()
 {
@@ -252,6 +259,7 @@ void key_board::press_num_7_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_7, Qt::NoModifier, QString("7"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_8_slot()
 {
@@ -264,6 +272,7 @@ void key_board::press_num_8_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_8, Qt::NoModifier, QString("8"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_num_9_slot()
 {
@@ -276,6 +285,7 @@ void key_board::press_num_9_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_9, Qt::NoModifier, QString("9"));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_key_point_slot()
 {
@@ -288,6 +298,7 @@ void key_board::press_key_point_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Period, Qt::NoModifier, QString("."));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 
 }
 void key_board::press_key_back_slot()
@@ -301,6 +312,7 @@ void key_board::press_key_back_slot()
     QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Backspace, Qt::NoModifier, QString(""));
     QApplication::sendEvent(receiver, &keyPress);
     QApplication::sendEvent(receiver, &keyRelease);
+    val_change = 1;
 }
 void key_board::press_key_enter_slot()
 {
@@ -347,7 +359,7 @@ void key_board::key_pressed()
 
 void key_board::Deal_enter_fun()
 {
-    qDebug()<<"按回车";
+    //qDebug()<<"按回车";
     if(barstock_flg==1)
     {
         emit output_enter_signak();

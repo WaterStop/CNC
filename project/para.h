@@ -379,11 +379,12 @@ typedef enum
     //0：不使用，1使用。是否使用编码器接口做为各个手轮的输入值,电子车专用参数
     //为了防止切换后导致的数值突然增加，再修改后需要重新同步一下手轮的值
     //设置这个变量为0-----MOTION_#defineERNAL->WHEEL_INFO[AXIS].ALREADY_SYNC_HARDWARE_VAL
-    WHEEL_USED_ENCODE_X,
-    WHEEL_USED_ENCODE_Z,
-    WHEEL_USED_ENCODE_Y,
-    WHEEL_USED_ENCODE_4,
-    WHEEL_USED_ENCODE_5,
+    //目前只使用了WHEEL_USED_ENCODE，用作总开关
+    WHEEL_USED_ENCODE,
+    //WHEEL_USED_ENCODE_Z,
+    //WHEEL_USED_ENCODE_Y,
+    //WHEEL_USED_ENCODE_4,
+    //WHEEL_USED_ENCODE_5,
 
     //------------------------------------------------------------------------------------------------------------刀补
     TOOL_MAX_NUM=900,//总刀位数
@@ -535,6 +536,9 @@ typedef enum
 
     REST_SINGL_OUT_TIM,    //   复位信号输出时间
 
+    DA1_LOW_VAL,//da1对应接口的能获取的最小值
+    DA1_HIGH_VAL,//da1对应接口的能获取的最大值
+
     
 
     //------------------------------------------------------------------------------------------------------------总线参数    
@@ -592,7 +596,7 @@ struct para_s
         double  double_val;
     }cur_val,min_val,max_val;
     
-    char visible;//是否可见    
+    char visible;//是否可见 0不可见 1可见
 };
 
 extern struct para_s * para;

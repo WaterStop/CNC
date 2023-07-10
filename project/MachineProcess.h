@@ -14,17 +14,18 @@
 @author：sen
 @time：2022.11.11
  */
-
-#include <fstream>
-#include <iostream>
-#include <QDebug>
-#include <QPainter>
-
-#include <Bar.h>
-#include <MachineFusion.h>
-#include <machineStruct.h>
-#include <MachineSequence.h>
 #include <MachineTrace.h>
+#include <MachineSequence.h>
+#include <Bar.h>
+#include <QPainter>
+#include <iostream>
+#include <fstream>
+#include<QDebug>
+#include "baseset.h"
+
+#define TEST 1
+
+class MachineSequene;
 
 using namespace std;
 class MachineProcess{
@@ -33,9 +34,11 @@ public:
 
     bool firstInsystem;
     MachineSequene m_mSeq;
-    // 通过最后一个trueBarWidth和barWidth计算真正棒料和图中棒料的比例
+
     MachineProcess(int canvasWidth, int canvasHeight, int barWidth, int barHeight, double trueBarWidth);
 
+    // 坐标转换器
+    void StartCordTranslate(coordinate &start_cord);
     // 工艺接口
     // 横向加工
     bool transverseMachining(coordinate startCord, int len, int h);
@@ -48,7 +51,7 @@ public:
         // 横向螺纹加工
     bool tThreadMachining(coordinate startCord, int pitch, int depth, int len);
         // 斜向螺纹加工
-    bool oThreadMachining(coordinate startCord, int pitch, int depth, int len, int height);
+    bool oThreadMachining(coordinate startCord, int pitch, int depth, int len, float slope);
     // 圆弧加工
     bool arcMachining(coordinate p1, coordinate p2, double radius, bool arcCodition);
 
@@ -139,6 +142,32 @@ public:
     void chamfer4_GCode(machineNode*, ofstream*, bool*);
     bool outputGCode();
 
+    void outerCircle1_GCode_auto(machineNode*, ofstream*, bool*);
+    void outerCircle2_GCode_auto(machineNode*, ofstream*, bool*);
+    void outerCircle3_GCode_auto(machineNode*, ofstream*, bool*);
+    void endFace1_GCode_auto(machineNode*, ofstream*, bool*);
+    void endFace2_GCode_auto(machineNode*, ofstream*, bool*);
+    void endFace3_GCode_auto(machineNode*, ofstream*, bool*);
+    void innerHole1_GCode_auto(machineNode*, ofstream*, bool*);
+    void innerHole2_GCode_auto(machineNode*, ofstream*, bool*);
+    void innerHole3_GCode_auto(machineNode*, ofstream*, bool*);
+    void innerHole4_GCode_auto(machineNode*, ofstream*, bool*);
+    void innerHole5_GCode_auto(machineNode*, ofstream*, bool*);
+    void coneFace1_GCode_auto(machineNode*, ofstream*, bool*);
+    void coneFace2_GCode_auto(machineNode*, ofstream*, bool*);
+    void coneFace3_GCode_auto(machineNode*, ofstream*, bool*);
+    void coneFace4_GCode_auto(machineNode*, ofstream*, bool*);
+    void screwThread1_GCode_auto(machineNode*, ofstream*, bool*);
+    void screwThread2_GCode_auto(machineNode*, ofstream*, bool*);
+    void screwThread3_GCode_auto(machineNode*, ofstream*, bool*);
+    void screwThread4_GCode_auto(machineNode*, ofstream*, bool*);
+    void chamfer1_GCode_auto(machineNode*, ofstream*, bool*);
+    void chamfer2_GCode_auto(machineNode*, ofstream*, bool*);
+    void chamfer3_GCode_auto(machineNode*, ofstream*, bool*);
+    void chamfer4_GCode_auto(machineNode*, ofstream*, bool*);
+    bool outputGCode_auto();
+
+
     //将用户输入数据以文本形式记录
     bool textRecordData();
 
@@ -169,10 +198,10 @@ public:
     void TextRecoverNode(int, int, string, s_chamferMode3*, int*);
     void TextRecoverNode(int, int, string, s_chamferMode4*, int*);
 
-
-
-
-
+    bool recordVariable(void);
+    bool recoverVariable(void);
+    // 真实棒料比例 = 图棒料宽度/真实棒料宽度
+    double m_barScale;
 
 private:
     Bar *m_b;
@@ -182,14 +211,14 @@ private:
     int m_canvasHeight;
 
     // 画布中将要绘制的bar的描述（使用setBarAttribute函数进行bar的属性设置）
-    coordinate startPos;// 棒料左下角坐标，这应该封装在棒料里面！！！
+    coordinate startPos;// 棒料左下角坐标，用于绘制棒料
+    coordinate rightDownPos;// 棒料右下角坐标,用于调整坐标系,使得工艺绘制时棒料右下角为{0,0}
     int m_barWidth;
     int m_barHeight;
 
     // 真实棒料大小
     double m_trueBarWidth;
-    // 真实棒料比例 = 图棒料宽度/真实棒料宽度
-    double m_barScale;
+
 
 };
 

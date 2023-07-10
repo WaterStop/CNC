@@ -1,5 +1,6 @@
 
 #include <Bar.h>
+#include<QDebug>
 
 // Bar
 // 构造函数
@@ -67,7 +68,7 @@ bool Bar::barInit(int width, int height)
     // - 工艺的方向：起始点在右下角，向左雕刻，输入参数均为正数
 bool Bar::transverseMachining(coordinate startCord, int len, int height ){
 
-
+  qDebug()<<"len="<< len;
     // 参数健壮性检查
     if (len<0 || height <0)
         return false;
@@ -76,11 +77,15 @@ bool Bar::transverseMachining(coordinate startCord, int len, int height ){
     int bottom = startCord.y;
     int left = startCord.x-len;// 工艺左边界不能超越棒料底部
     int right = startCord.x;
+    //int rr;
     // 将工艺雕刻的范围中的在画布中的部分设置为0
     for(int x = left; x <= right; x++)
          for(int y = bottom; y <= top; y++ ){
             if(x>=0 && x<m_canvasWidth&& y>=0 && y<m_canvasHeight)
+                //rr = m_pixelArray[x][y];
+                //cout << rr;
                 m_pixelArray[x][y] = 0;
+
         }
     return true;
 }
@@ -162,7 +167,7 @@ int Bar::vecCalculate(coordinate A, coordinate B, coordinate P)
 
 
     // 横向螺纹加工
-    // 参数（起始点（在右下角），螺距(三角低宽)，螺纹深度（进刀量*次数），螺纹长度）
+    // 参数（起始点（在右下角），螺距(三角低长)，螺纹深度（进刀量*次数），螺纹长度）
 bool Bar::tThreadMachining(coordinate startCord, int pitch, int depth, int len)
 {
 
@@ -223,9 +228,11 @@ void Bar::getIntersectPoint(coordinate lineOnePt1, coordinate lineOnePt2,
 }
 
 // 参数描述的是直角三角形，在该三角形的斜边上雕刻螺纹，直角边的交点是右下角startCord，len描述底边，height描述高
+// pitch和depth分别描述小三角性的底和高
 bool Bar::oThreadMachining(coordinate startCord, int pitch, int depth, int len, int height)
 {
-
+    // 先切一个斜三角区域
+    obliqueMachiningLeftDown(startCord, len, len/height);
     // 参数健壮性检查
     if (len < 0 || pitch < 0 || height < 0)
         return false;
@@ -342,13 +349,12 @@ coordinate *Bar::Circle_Center(coordinate p1, coordinate p2, double dRadius)
 bool Bar::arcMachining(coordinate p1, coordinate p2, double radius, bool arCCodition)
 {
 
+    // TODO:当半径不足时,会绘制正方形
     // 归一化处理
     coordinate pu = (p1.y > p2.y) ? p1 : p2;// under上面的弧点
     coordinate pd = (p1.y < p2.y) ? p1 : p2;// down下面的弧点
     // 求圆心
     coordinate *centerP = Circle_Center(pu, pd, radius);
-
-
     // 像素处理
     // centerP[1]是左边优弧的圆心，centerP[0]是右边圆弧
     if(arCCodition){

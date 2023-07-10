@@ -8,11 +8,11 @@
 
 int main(int argc, char *argv[])
 {
-
-
     QTextCodec *codec=QTextCodec::codecForName("utf-8");//修复读中文乱码
     QTextCodec::setCodecForLocale(codec);//修复读中文乱码
-    //shm_init();
+#if debug_on == 0
+    shm_init();
+#endif
     QApplication a(argc, argv);
     Widget w;
     //wedget1 w;

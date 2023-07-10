@@ -269,5 +269,40 @@
         <file>File/warn.txt</file>
         <file>File/warn.csv</file>
         <file>blue_pic/error_tip_bk.png</file>
+        <file>blue_pic/set_alarm_info_tip.png</file>
+        <file>blue_pic/key2_bk.png</file>
+        <file>blue_pic/key2_cap_bk.png</file>
+        <file>blue_pic/key2_back_bk.png</file>
+        <file>blue_pic/key2_enter_bk.png</file>
+        <file>blue_pic/key2_space_bk.png</file>
+        <file>blue_pic/bt_func_bk.png</file>
+        <file>blue_pic/key2_cap_bk_on.png</file>
+        <file>blue_pic/list_head_bk.png</file>
+        <file>File/HISALM_NOTE.csv</file>
+        <file>blue_pic/wg4_probar_bk.png</file>
+        <file>blue_pic/wg4_probar_bk1.png</file>
+        <file>blue_pic/wg5_mod3_off.png</file>
+        <file>blue_pic/wg5_mod3_on.png</file>
+        <file>blue_pic/wg5_mod2_off.png</file>
+        <file>blue_pic/wg5_mod2_on.png</file>
+        <file>blue_pic/wg5_mod1_off.png</file>
+        <file>blue_pic/wg5_mod1_on.png</file>
+        <file>blue_pic/wg2_t_bt4_num0.png</file>
+        <file>blue_pic/wg2_t_bt4_num9.png</file>
+        <file>blue_pic/wg2_t_bt4_num8.png</file>
+        <file>blue_pic/wg2_t_bt4_num7.png</file>
+        <file>blue_pic/wg2_t_bt4_num5.png</file>
+        <file>blue_pic/wg2_t_bt4_num6.png</file>
+        <file>blue_pic/wg2_t_bt4_num4.png</file>
+        <file>blue_pic/wg2_t_bt4_num3.png</file>
+        <file>blue_pic/wg2_t_bt4_num2.png</file>
+        <file>blue_pic/wg2_t_bt4_num1.png</file>
+        <file>blue_pic/wg3_edit_down.png</file>
+        <file>blue_pic/wg3_edit_up.png</file>
+        <file>blue_pic/wg3_edit_right.png</file>
+        <file>blue_pic/wg3_edit_left.png</file>
+        <file>blue_pic/protect_bk.png</file>
+        <file>blue_pic/file.png</file>
+        <file>blue_pic/folder.png</file>
     </qresource>
 </RCC>

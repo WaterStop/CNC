@@ -5,11 +5,23 @@
 #include <QWidget>
 #include <QPainter>
 #include <cmath>
-#include<machineStruct.h>
 using namespace std;
 
 
 // ************棒料类：主要处理棒料的属性和操作*****************
+
+// 坐标结构体,在MachineSequence中已经定义
+typedef struct{
+    int x;
+    int y;
+} coordinate;
+
+// 顶点结构体
+typedef struct v{
+    coordinate p;
+    struct v *next;
+}vertex;
+
 
 #define BYTE unsigned char
 #define  MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -73,11 +85,6 @@ private:
 
 
 };
-
-
-
-
-
 
 
 
