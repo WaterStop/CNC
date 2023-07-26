@@ -60,6 +60,8 @@
 
 class MachineProcess;
 
+
+
 #define debug_on 1 //调试状态
 
 //当前屏幕

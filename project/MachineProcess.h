@@ -22,12 +22,14 @@
 #include <fstream>
 #include<QDebug>
 #include "baseset.h"
-
+using namespace std;
 #define TEST 1
 
-class MachineSequene;
+    struct TrueCoordinate {
+        double x;
+        double y;
+    };
 
-using namespace std;
 class MachineProcess{
 
 public:
@@ -35,25 +37,26 @@ public:
     bool firstInsystem;
     MachineSequene m_mSeq;
 
-    MachineProcess(int canvasWidth, int canvasHeight, int barWidth, int barHeight, double trueBarWidth);
+    MachineProcess(int canvasWidth, int canvasHeight, double trueBarWidth, double trueBarHeight);
 
-    // 坐标转换器
-    void StartCordTranslate(coordinate &start_cord);
+    // 坐标转换器:真实棒料的double类型坐标转换成
+    coordinate StartCordTranslate(TrueCoordinate &start_cord);
+    // 角度转换器：将角度转换成tan值，如输入45，输出tan(45) = 1
+    double AngleToTan(int angle);
     // 工艺接口
     // 横向加工
-    bool transverseMachining(coordinate startCord, int len, int h);
+    bool transverseMachining(TrueCoordinate startCord, double len, double h);
     // 斜向加工，切削出的为直角三角形，startCord都是右下点
         // 自顶点开始向左下↙
-    bool obliqueMachiningLeftDown(coordinate startCord, int len, float slope);
+    bool obliqueMachiningLeftDown(TrueCoordinate startCord, double len, int angle);
         // 自顶点开始向右下↘
-    bool obliqueMachiningRightDown(coordinate startCord, int len, float slope);
-    // 螺纹加工
+    bool obliqueMachiningRightDown(TrueCoordinate startCord, double len, int angle);
         // 横向螺纹加工
-    bool tThreadMachining(coordinate startCord, int pitch, int depth, int len);
+    bool tThreadMachining(TrueCoordinate startCord, double pitch, double depth, double len);
         // 斜向螺纹加工
-    bool oThreadMachining(coordinate startCord, int pitch, int depth, int len, float slope);
+    bool oThreadMachining(TrueCoordinate startCord, double pitch, double depth, double len, int angle);
     // 圆弧加工
-    bool arcMachining(coordinate p1, coordinate p2, double radius, bool arcCodition);
+    bool arcMachining(TrueCoordinate p1, TrueCoordinate p2, double radius, bool arcCodition);
 
 
     bool addNode(s_outerCircleMode1 outerCircle1);
@@ -201,7 +204,7 @@ public:
     bool recordVariable(void);
     bool recoverVariable(void);
     // 真实棒料比例 = 图棒料宽度/真实棒料宽度
-    double m_barScale;
+    double scale_;
 
 private:
     Bar *m_b;
@@ -218,7 +221,7 @@ private:
 
     // 真实棒料大小
     double m_trueBarWidth;
-
+    double m_trueBarHeight;
 
 };
 

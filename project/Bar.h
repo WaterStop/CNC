@@ -16,11 +16,6 @@ typedef struct{
     int y;
 } coordinate;
 
-// 顶点结构体
-typedef struct v{
-    coordinate p;
-    struct v *next;
-}vertex;
 
 
 #define BYTE unsigned char
@@ -43,7 +38,7 @@ public:
 
 
     // 将bar中工艺的startCord起始点设置为bar的左下角
-    void setStartCord(coordinate &startCord);
+    int setStartCord(coordinate &startCord);
 
 
 
@@ -79,10 +74,6 @@ private:
     BYTE ** m_pixelArray;
     int m_canvasWidth;
     int m_canvasHeight;
-
-
-
-
 
 };
 

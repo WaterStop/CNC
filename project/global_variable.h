@@ -5,6 +5,10 @@
 
 #include<math.h>
 
+
+
+
+
 #define G2 0
 #define G3 1
 #define PI2        6.2831853071795864 // 2*PI

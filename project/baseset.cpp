@@ -22,7 +22,7 @@ bool modify_flg = 0;//是否为修改状态 0：否 1：是
 bool val_change = 0;//工艺参数是否修改 0：否 1：是
 //MachineProcess *dealInterfaceData;
 
-MachineProcess *dealInterfaceData = new MachineProcess(400,320,380,170,380);
+MachineProcess *dealInterfaceData = new MachineProcess(400, 320, 3800, 3200);
 //MachineSequene *machineinfo = new MachineSequene();
 bool first_input = 0;
 bool input_clear = 1;//是否清除控件内数值，1是  0否

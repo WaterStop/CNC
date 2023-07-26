@@ -373,8 +373,8 @@ bool widget3_3::wedget3_3ToProcessList(MachineProcess* dealInterfaceData, s_oute
     outerCircle1->Cn = ui->edit_3->text().toInt();
     outerCircle1->Cr = ui->edit_4->text().toDouble();
     outerCircle1->F = ui->edit_5->text().toDouble();
-    outerCircle1->startCord.x = barstock_L1*dealInterfaceData->m_barScale;
-    outerCircle1->startCord.y = barstock_D1*dealInterfaceData->m_barScale;
+    outerCircle1->startCord.x = barstock_L1*dealInterfaceData->scale_;
+    outerCircle1->startCord.y = barstock_D1*dealInterfaceData->scale_;
 
 //    decode_status->GlobMacroBuf[GetIndexByLine(501)] = outerCircle1->L;//F
 //    decode_status->GlobMacroBuf[GetIndexByLine(502)] = ;//角度

@@ -1,5 +1,7 @@
 #include<MachineProcess.h>
-
+#include <stack>
+#include <unordered_map>
+#include <unordered_set>
 
 /***********图像的放缩和移动需要再widget进行处理，下面是中间画图窗口的基本使用和初始化
     // 窗口大小
@@ -41,19 +43,72 @@
 
 
 
+int main() {
+    int n = 0;
+    int k = 0;
+    cin >> n;
+    cin >> k;
+    unordered_map<int,int> umap;
+    int p = 0;
+    while (n--) {
+        cin >> p;
+        umap[p]++;
+    }
+
+    int count= 0;
+
+    for (auto &i : umap) {
+        if (i.second > 1) {\
+            int c = 1;
+            while(umap.find(umap[i.first + c*k]) != umap.end()) {
+                c++;
+            }
+            umap[i.first + c*k]++;
+            umap[i.first]--;
+            count += c;
+        }
+    }
+
+    vector<int> vec;
+    for (auto const &i : umap) {
+        vec.push_back(i.first);
+    }
 
 
-
-
-
-
+    for (auto i : vec) {
+        cout << i << ' ';
+    }
+}
 
 // 对于MachineProcess类中操作的重新封装
 // 高度除以二是进行镜像处理
-MachineProcess::MachineProcess(int canvasWidth, int canvasHeight, int barWidth, int barHeight, double trueBarWidth)
-    :m_canvasWidth(canvasWidth), m_canvasHeight(canvasHeight), m_barWidth(barWidth), m_barHeight(barHeight), m_trueBarWidth(trueBarWidth)
+// 本项目中画布固定为 400， 320
+MachineProcess::MachineProcess(int canvasWidth, int canvasHeight,double trueBarWidth, double trueBarHeight)
+    : m_canvasWidth(canvasWidth), m_canvasHeight(canvasHeight),
+      m_trueBarWidth(trueBarWidth), m_trueBarHeight(trueBarHeight)
 {
-    m_mSeq.setbar(barWidth, barHeight);
+
+
+    // 比例适应性调整，调整到最适合画布长宽的比例，只需要画布和真正的即可
+    auto init_scale = [this](){
+        // 预览棒料所占画布的比例
+        const float kScale = 0.95;
+        // 计算比例长
+        m_barWidth = m_canvasWidth / m_canvasHeight * m_trueBarHeight;
+        if (m_barWidth > m_trueBarWidth) {// 宽优先：理论宽大于实际
+            this->m_barWidth = static_cast<int>(this->m_canvasWidth * kScale);// 先进行棒料宽的固定
+            this->scale_ = this->m_barWidth / this->m_trueBarWidth;
+            this->m_barHeight = static_cast<int>(this->scale_ * this->m_trueBarHeight);
+        } else {// 长优先
+            this->m_barHeight = static_cast<int>(this->m_canvasHeight * kScale);// 先进行棒料长的固定
+            this->scale_ = this->m_barHeight / this->m_trueBarHeight;
+            this->m_barWidth = static_cast<int>(this->scale_ * this->m_trueBarWidth);
+        }
+    };
+    init_scale();
+
+
+    m_mSeq.setbar(this->m_barWidth, this->m_barHeight);
     // 防止未初始化而使用参数导致出错
     startPos.x = 0;
     startPos.y = 0;
@@ -61,8 +116,10 @@ MachineProcess::MachineProcess(int canvasWidth, int canvasHeight, int barWidth, 
     // 健壮处理,防止除零异常
     if(trueBarWidth == 0)
         cerr << "MachineProcess`s constructed function divide 0 error!!!";
-    //m_barScale = barWidth/trueBarWidth;
-    m_barScale = 1;
+
+
+
+
 
     // 棒料左下位置的初始化
     startPos.x = floor((m_canvasWidth-m_barWidth)/2);
@@ -331,7 +388,6 @@ bool MachineProcess::changeNode(int pos, s_chamferMode4 chamfer4)
 #### 移动思路
     - 采用单次完全刷新，每次重置棒料在二维数组中的位置（是否非单次完全刷新会更好。即单次放大，多次移动）
     - 现在是 实际位置 = （原始位置 * 放大倍数） + 平移量
-
 */
 
 
@@ -357,110 +413,124 @@ bool MachineProcess::update_pixelArray()
        //qDebug()<<"startPos.y"<<startPos.y<<"m_canvasHeight"<<m_canvasHeight<<"b_barHeight"<<b_barHeight;
     // 改动
     // 遍历工艺链表，根据工艺类型判断将要使用的工艺结构体，并进行工艺加工
-    while(p != nullptr){
+       barstock_D1 = 0;
+       barstock_L1 = 0;
+       while(p != nullptr){
            switch(p->type){
            case 0 :
                break;
            case OUTER_CIRCLE_ONE:
-               //startCord.x = /*OUTER_CIRCLE_ONE_X +*/ startPos.x;
-               //startCord.y = /*OUTER_CIRCLE_ONE_Y +*/ startPos.y;
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               transverseMachining(startCord, p->outerCircle1.L, p->outerCircle1.Cr);
+
+               // TODO如果barstock_L1是真实位置，需要barstock_D1  * scale_，否则不需要使用下面两句
+               // TODO：工艺中的coordinate应该是double类型
+               startCord.x = (barstock_L1 + startCord.x * scale_ )* -1;
+               startCord.y = barstock_D1 + startCord.y * scale_;
+               // TODO：位置参数需要定义
+               transverseMachining({-500.0,0.0}, p->outerCircle1.L, p->outerCircle1.Cr);
+#ifdef TEST
+
+               obliqueMachiningLeftDown({-650.0,0.0}, 500.0, 45);
+               obliqueMachiningRightDown({-1250.0,0.0}, 500.0, 45);
+               tThreadMachining({-1750.0,0.0}, 150.0, 130, 500.0);
+               oThreadMachining({-650.0,0.0}, 100.0, 130, 500.0, 30);
+               arcMachining({-2850.0,0.0}, {-2350.0,500.0}, 500, true);
+
+#endif
+
+
                break;
 
+/*
            case OUTER_CIRCLE_TWO:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               obliqueMachiningLeftDown(startCord, p->outerCircle2.L, p->outerCircle2.A);// eg
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               obliqueMachiningLeftDown({0.0,0.0}, p->outerCircle2.L, p->outerCircle2.A);// eg
                break;
-
            case OUTER_CIRCLE_THREE:
-               startCord.x = (barstock_L1 + p->outerCircle2.L) * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               endCord.x = barstock_L1 * m_barScale * -1;
-               endCord.y = (barstock_L1 + p->outerCircle2.Cr) * m_barScale;
+               startCord.x = (barstock_L1 + p->outerCircle2.L) * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               endCord.x = barstock_L1 * scale_ * -1;
+               endCord.y = (barstock_L1 + p->outerCircle2.Cr) * scale_;
                // TODO:画的是矩形,而不是圆弧 r =20
-               arcMachining(startCord, endCord, p->outerCircle3.R, false);//p->outerCircle3.G2G3);
+               arcMachining({0.0,0.0}, endCord, p->outerCircle3.R, false);//p->outerCircle3.G2G3);
                break;
 
            case END_FACE_ONE:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               transverseMachining(startCord, p->endFace1.CT, p->endFace1.Lr);
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               transverseMachining({0.0,0.0}, p->endFace1.CT, p->endFace1.Lr);
                break;
 
            case END_FACE_TWO:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               transverseMachining(startCord, p->endFace2.W, p->endFace2.Lr);
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               transverseMachining({0.0,0.0}, p->endFace2.W, p->endFace2.Lr);
                break;
 
            case END_FACE_THREE:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               transverseMachining(startCord, p->endFace3.CT, p->endFace3.Lr);
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               transverseMachining({0.0,0.0}, p->endFace3.CT, p->endFace3.Lr);
                break;
 
            case INNER_HOLE_ONE:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               transverseMachining(startCord, p->innerHole1.L, p->innerHole1.Tr);
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               transverseMachining({0.0,0.0}, p->innerHole1.L, p->innerHole1.Tr);
                break;
 
            case INNER_HOLE_TWO:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               transverseMachining(startCord, p->innerHole2.L, p->innerHole2.A);
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               transverseMachining({0.0,0.0}, p->innerHole2.L, p->innerHole2.A);
                break;
 
            case INNER_HOLE_THREE:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               transverseMachining(startCord, p->innerHole3.W, p->innerHole3.Lr);
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               transverseMachining({0.0,0.0}, p->innerHole3.W, p->innerHole3.Lr);
                break;
 
            case INNER_HOLE_FOUR:
-               startCord.x = (barstock_L1 + p->innerHole4.L) * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               endCord.x = barstock_L1 * m_barScale * -1;
-               endCord.y = (barstock_L1 + p->innerHole4.Cr) * m_barScale;;
+               startCord.x = (barstock_L1 + p->innerHole4.L) * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               endCord.x = barstock_L1 * scale_ * -1;
+               endCord.y = (barstock_L1 + p->innerHole4.Cr) * scale_;;
                arcMachining(startCord, endCord, p->innerHole4.R, p->innerHole4.G2G3);
                break;
-
            case CONE_FACE_ONE:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               obliqueMachiningLeftDown(startCord, p->coneFace1.L, p->coneFace1.A);// eg
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               obliqueMachiningLeftDown(p->coneFace1.startCord, p->coneFace1.L, p->coneFace1.A);// eg
                break;
 
            case CONE_FACE_TWO:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
                obliqueMachiningRightDown(startCord, p->coneFace1.L, p->coneFace1.A);// eg
                break;
 
            case CONE_FACE_THREE:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
                obliqueMachiningLeftDown(startCord, p->coneFace1.L, p->coneFace1.A);// eg
                break;
 
            case CONE_FACE_FOUR:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
                obliqueMachiningRightDown(startCord, p->coneFace1.L, p->coneFace1.A);// eg
                break;
 
            case SCREW_THREAD_ONE:// 横螺纹
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
                tThreadMachining(startCord, p->screwThread1.Tp, p->screwThread1.Cr, p->screwThread1.L);
               break;
 
            case SCREW_THREAD_TWO:// 斜螺纹
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
                // 最后一个参数有问题，qt传进来是负数
 
                oThreadMachining(startCord, p->screwThread4.Tp, p->screwThread4.Cr, p->screwThread4.L, p->screwThread4.A);// eg
@@ -468,45 +538,48 @@ bool MachineProcess::update_pixelArray()
                break;
 
            case SCREW_THREAD_THREE:// 横螺纹
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
                tThreadMachining(startCord, p->screwThread3.Tp, p->screwThread3.Cr, p->screwThread3.L);
               break;
 
            case SCREW_THREAD_FOUR:// 斜螺纹
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
                oThreadMachining(startCord, p->screwThread4.Tp, p->screwThread4.Cr, p->screwThread4.L, p->screwThread4.A);
                break;
 
            case CHAMFER_ONE:
-               startCord.x = (barstock_L1 + p->chamfer1.L) * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               endCord.x = barstock_L1 * m_barScale * -1;
-               endCord.y = (barstock_L1 + p->chamfer1.Cr) * m_barScale;;
+               startCord.x = (barstock_L1 + p->chamfer1.L) * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               endCord.x = barstock_L1 * scale_ * -1;
+               endCord.y = (barstock_L1 + p->chamfer1.Cr) * scale_;;
                arcMachining(startCord, endCord, p->chamfer1.R, p->chamfer1.G2G3);
                break;
 
            case CHAMFER_TWO:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
                obliqueMachiningLeftDown(startCord, p->chamfer2.L, p->chamfer2.A);// eg
                break;
 
            case CHAMFER_THREE:
-               startCord.x = (barstock_L1 + p->chamfer3.L) * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
-               endCord.x = barstock_L1 * m_barScale * -1;
-               endCord.y = (barstock_L1 + p->chamfer3.Cr) * m_barScale;;
+               startCord.x = (barstock_L1 + p->chamfer3.L) * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
+               endCord.x = barstock_L1 * scale_ * -1;
+               endCord.y = (barstock_L1 + p->chamfer3.Cr) * scale_;;
                arcMachining(startCord, endCord, p->chamfer3.R, p->chamfer3.G2G3);
                break;
 
            case CHAMFER_FOUR:
-               startCord.x = barstock_L1 * m_barScale * -1;
-               startCord.y = barstock_D1 * m_barScale;
+               startCord.x = barstock_L1 * scale_ * -1;
+               startCord.y = barstock_D1 * scale_;
 
                obliqueMachiningLeftDown(startCord, p->chamfer4.L, p->chamfer4.A);// eg
                break;
+
+*/
+
 /*         case 3 :// 横螺纹
                p->outerCircle3.startCord.x = (p->outerCircle3.startCord.x) + startPos.x;
                p->outerCircle3.startCord.y = (p->outerCircle3.startCord.y) + startPos.y;
@@ -4035,6 +4108,28 @@ void MachineProcess::TextRecoverNode(int loopNum, int type, string data, s_chamf
     }
 }
 
+
+int peach(){
+    int n = 0;
+    cin >> n;
+    vector<int> vec;
+    int p;
+    while (n--) {
+        cin >> p;
+        vec.push_back(p);
+
+    }
+
+    // 区间内所有元素+1
+    auto add_1 = [&vec](int start, int end){
+      for (int i = start; i <= end; ++i) {
+          ++vec[i];
+      }
+    };
+    // 判断是否严格递增
+
+}
+
 void MachineProcess::TextRecoverNode(int loopNum, int type, string data, s_chamferMode4 *chamfer4, int* findNodeNum)
 {
     if(CHAMFER_FOUR == type)
@@ -4086,68 +4181,89 @@ void MachineProcess::TextRecoverNode(int loopNum, int type, string data, s_chamf
     }
 }
 
-inline void MachineProcess::StartCordTranslate(coordinate &start_cord) {
-    start_cord.x += rightDownPos.x;
-    start_cord.y += rightDownPos.y;
+
+
+inline coordinate MachineProcess::StartCordTranslate(TrueCoordinate &true_start_cord) {
+    coordinate cord;
+
+    cord.x = (true_start_cord.x * scale_);
+    cord.y = (true_start_cord.y * scale_);
+    // 将雕刻起始点转换成棒料在窗口坐标系中的右上角
+    cord.x += rightDownPos.x;
+    cord.y += rightDownPos.y;
+    return cord;
+}
+// 将角度转换成tan
+inline double MachineProcess::AngleToTan(int angle)
+{
+    // TODO:健壮性检查
+    if (angle < 0 || angle > 360)
+        return INT_MAX;
+    return tan(angle*PI/180);
 }
 
 // 矩形工艺
-inline bool MachineProcess::transverseMachining(coordinate startCord, int len, int h)
+inline bool MachineProcess::transverseMachining(TrueCoordinate true_start_cord, double len, double h)
 {
+    coordinate cord = StartCordTranslate(true_start_cord);
+    int length = floor(len * scale_);
+    int height = floor(h * scale_);
 
-    StartCordTranslate(startCord);
-    int length = floor(len * m_barScale);//**********************
-    int height = floor(h * m_barScale);
-
-    return m_b->transverseMachining(startCord, length, height);
+    return m_b->transverseMachining(cord, length, height);
 }
 
-bool MachineProcess::obliqueMachiningLeftDown(coordinate startCord, int len, float slope)
+bool MachineProcess::obliqueMachiningLeftDown(TrueCoordinate true_start_cord, double len, int angle)
 {
 
-    StartCordTranslate(startCord);
-    int length = floor(len * m_barScale);
-    slope = tan(slope);
-    return m_b->obliqueMachiningLeftDown(startCord, length, slope);// 确定方向
+    coordinate cord = StartCordTranslate(true_start_cord);
+    len = floor(len * scale_);
+    double slope = AngleToTan(angle);
+    return m_b->obliqueMachiningLeftDown(cord, len, slope);// 确定方向
 }
-bool MachineProcess::obliqueMachiningRightDown(coordinate startCord, int len, float slope)
+bool MachineProcess::obliqueMachiningRightDown(TrueCoordinate true_start_cord, double len, int angle)
 {
-    StartCordTranslate(startCord);
-    int length = floor(len * m_barScale);
-    float i = tan(slope * PI / 180.0f);
-    int h = floor( i * m_barScale);
-    return m_b->obliqueMachiningRightDown(startCord, length, i);// 确定方向
+
+    coordinate cord = StartCordTranslate(true_start_cord);
+
+    len = floor(len * scale_);
+    double slope = AngleToTan(angle);
+    return m_b->obliqueMachiningRightDown(cord, len, slope);// 确定方向
 }
 // 横向螺纹
-inline bool MachineProcess::tThreadMachining(coordinate startCord, int pitch, int depth, int len)
+inline bool MachineProcess::tThreadMachining(TrueCoordinate true_start_cord, double pitch, double depth, double len)
 {
-    StartCordTranslate(startCord);
-    int length = floor(len * m_barScale);
-    int d = floor(depth * m_barScale);
-    pitch = 2;// TODO:上层工艺没有调用
-    return m_b->tThreadMachining(startCord, pitch, d, length);
+
+    coordinate cord = StartCordTranslate(true_start_cord);
+    int length = floor(len * scale_);
+    int d = floor(depth * scale_);
+    int p = floor(pitch * scale_);
+    return m_b->tThreadMachining(cord, p, d, length);
 }
 // 斜向螺纹
-inline bool MachineProcess::oThreadMachining(coordinate startCord, int pitch, int depth, int len, float slope)
+inline bool MachineProcess::oThreadMachining(TrueCoordinate true_start_cord, double pitch, double depth, double len, int angle)
 {
-    StartCordTranslate(startCord);
-    int p = floor(pitch * m_barScale);
-    int d = floor(depth * m_barScale);
-    int l = floor(len * m_barScale);
-    float i = len/tan(slope * PI / 180.0f);
-    int h = floor( i * m_barScale);
 
-    return m_b->oThreadMachining(startCord, p, d, l, h);
+
+    coordinate cord = StartCordTranslate(true_start_cord);
+    pitch = floor(pitch * scale_);
+    depth = floor(depth * scale_);
+    len = floor(len * scale_);
+    double slope = AngleToTan(angle);
+    int height = floor( len / slope);
+
+    return m_b->oThreadMachining(cord, pitch, depth, len, height);
 }
+
 // 圆弧加工
-inline bool MachineProcess::arcMachining(coordinate p1, coordinate p2, double radius, bool arcCodition)
+inline bool MachineProcess::arcMachining(TrueCoordinate true_p1, TrueCoordinate true_p2, double radius, bool arcCodition)
 {
-    StartCordTranslate(p1);
-    StartCordTranslate(p2);
-    int r = floor(radius * m_barScale);
+    coordinate p1 = StartCordTranslate(true_p1);
+    coordinate p2 = StartCordTranslate(true_p2);
+    int r = floor(radius * scale_);
     return m_b->arcMachining( p1, p2, r, arcCodition);
+
 }
-//
+
 
 void MachineProcess::outerCircle1_GCode_auto(machineNode* p, ofstream* GCode, bool* textHeadFlag)
 {

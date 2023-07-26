@@ -2,6 +2,18 @@
 #include <Bar.h>
 #include<QDebug>
 
+
+
+
+
+
+
+
+
+
+
+
+
 // Bar
 // 构造函数
 Bar::Bar(int canvasWidth, int canvasHeight)
@@ -57,10 +69,11 @@ bool Bar::barInit(int width, int height)
 }
 
 
+// 将bar中工艺的startCord起始点设置为bar的左下角
+int Bar::setStartCord(coordinate &startCord)
+{
 
-
-
-
+}
 // 必须规定坐标系：棒料的二维数组的左下角坐标是(0,0)，右上角坐标是(MAX_COL,MAX_ROW)
 // ### 工艺函数
 // 1. transverseMachining横向加工，切削出的为矩形
